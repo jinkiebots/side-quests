@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, Animated, StyleSheet, Dimensions } from 'react-native';
 import { DustBunny as DustBunnyType } from '../types/DustBunny';
+import { Vibe } from '../theme/vibe';
 
 interface DustBunnyComponentProps {
   dustBunny: DustBunnyType;
@@ -72,13 +73,14 @@ export const DustBunnyComponent: React.FC<DustBunnyComponentProps> = ({
   };
 
   const getDustBunnyColor = (personality: string): string => {
+    // soft pastel palette mapped from theme
     switch (personality) {
-      case 'mischievous': return '#ff6b6b';
-      case 'shy': return '#a8e6cf';
-      case 'chatty': return '#ffd93d';
-      case 'grumpy': return '#6c5ce7';
-      case 'friendly': return '#fd79a8';
-      default: return '#ddd';
+      case 'mischievous': return Vibe.dustBunnyColorByPersonality.mischievous;
+      case 'shy': return Vibe.dustBunnyColorByPersonality.shy;
+      case 'chatty': return Vibe.dustBunnyColorByPersonality.chatty;
+      case 'grumpy': return Vibe.dustBunnyColorByPersonality.grumpy;
+      case 'friendly': return Vibe.dustBunnyColorByPersonality.friendly;
+      default: return Vibe.dustBunnyColorByPersonality.default;
     }
   };
 
@@ -130,28 +132,32 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 5,
+    elevation: 3,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    borderWidth: 1.5,
+    borderColor: 'rgba(42,42,42,0.25)',
   },
   emoji: {
-    fontSize: 20,
+    fontSize: 18,
   },
   gossipBubble: {
     position: 'absolute',
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    backgroundColor: Vibe.colors.accentPink,
     borderRadius: 10,
     padding: 8,
-    maxWidth: 150,
+    maxWidth: 180,
     zIndex: 1000,
+    borderWidth: 1.5,
+    borderColor: 'rgba(42,42,42,0.2)',
   },
   gossipText: {
-    color: 'white',
+    color: Vibe.colors.ink,
     fontSize: 12,
     textAlign: 'center',
   },
@@ -166,7 +172,7 @@ const styles = StyleSheet.create({
     borderRightWidth: 5,
     borderTopColor: 'transparent',
     borderBottomColor: 'transparent',
-    borderRightColor: 'rgba(0, 0, 0, 0.8)',
+    borderRightColor: Vibe.colors.accentPink,
     transform: [{ translateY: -5 }],
   },
 });

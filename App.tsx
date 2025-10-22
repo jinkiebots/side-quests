@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, SafeAreaView, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Alert } from 'react-native';
 import { DustBunnyManager } from './src/components/DustBunnyManager';
 import { notificationService } from './src/services/NotificationService';
 import { NotificationData, DustBunny } from './src/types/DustBunny';
+import { Vibe } from './src/theme/vibe';
 
 export default function App() {
   const [notifications, setNotifications] = useState<NotificationData[]>([]);
@@ -51,12 +52,12 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
       
       {/* Main background */}
       <View style={styles.background}>
-        <Text style={styles.title}>🌪️ Dust Bunny Collection</Text>
-        <Text style={styles.subtitle}>Your ignored notifications come to life!</Text>
+        <Text style={styles.title}>Dust Bunny Collection</Text>
+        <Text style={styles.subtitle}>your ignored notifications come to life</Text>
       </View>
 
       {/* Stats panel */}
@@ -82,7 +83,7 @@ export default function App() {
         
         {/* Test button */}
         <TouchableOpacity style={styles.testButton} onPress={addTestNotification}>
-          <Text style={styles.testButtonText}>+ Add Test Notification</Text>
+          <Text style={styles.testButtonText}>+ add test notification</Text>
         </TouchableOpacity>
       </SafeAreaView>
 
@@ -95,15 +96,9 @@ export default function App() {
       {/* Instructions */}
       {ignoredCount === 0 && (
         <View style={styles.instructionsContainer}>
-          <Text style={styles.instructions}>
-            📱 Notifications will automatically appear and turn into dust bunnies when ignored!
-          </Text>
-          <Text style={styles.instructions}>
-            👆 Tap the button above to add a test notification, then wait for it to become a dust bunny.
-          </Text>
-          <Text style={styles.instructions}>
-            🎯 Tap dust bunnies to collect them and earn points!
-          </Text>
+          <Text style={styles.instructions}>notifications wander off and become little bunnies</Text>
+          <Text style={styles.instructions}>tap the button, wait a bit, then say hi</Text>
+          <Text style={styles.instructions}>tap a bunny to collect it — +10</Text>
         </View>
       )}
     </View>
@@ -113,7 +108,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1a1a2e',
+    backgroundColor: Vibe.colors.paper,
   },
   background: {
     position: 'absolute',
@@ -121,22 +116,24 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 200,
-    backgroundColor: '#16213e',
+    backgroundColor: 'transparent',
     justifyContent: 'center',
     alignItems: 'center',
     paddingTop: 60,
   },
   title: {
     fontSize: 28,
-    fontWeight: 'bold',
-    color: '#fff',
+    fontWeight: '600',
+    color: Vibe.colors.ink,
     marginBottom: 8,
+    letterSpacing: 0.5,
   },
   subtitle: {
-    fontSize: 16,
-    color: '#a8a8a8',
+    fontSize: 14,
+    color: Vibe.colors.mutedInk,
     textAlign: 'center',
     paddingHorizontal: 20,
+    fontStyle: 'italic',
   },
   statsContainer: {
     marginTop: 120,
@@ -144,51 +141,61 @@ const styles = StyleSheet.create({
   },
   statsPanel: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 15,
+    backgroundColor: Vibe.colors.panel,
+    borderRadius: Vibe.borders.radius,
     padding: 20,
     justifyContent: 'space-between',
+    borderWidth: Vibe.borders.width,
+    borderColor: 'rgba(42,42,42,0.15)',
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
   },
   statItem: {
     alignItems: 'center',
   },
   statNumber: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
+    fontWeight: '700',
+    color: Vibe.colors.ink,
   },
   statLabel: {
     fontSize: 12,
-    color: '#a8a8a8',
+    color: Vibe.colors.mutedInk,
     marginTop: 4,
+    letterSpacing: 0.5,
   },
   testButton: {
-    backgroundColor: '#4ecdc4',
-    borderRadius: 25,
-    paddingVertical: 15,
-    paddingHorizontal: 30,
+    backgroundColor: Vibe.colors.accent,
+    borderRadius: 28,
+    paddingVertical: 14,
+    paddingHorizontal: 24,
     alignSelf: 'center',
     marginTop: 20,
+    borderWidth: Vibe.borders.width,
+    borderColor: 'rgba(42,42,42,0.2)',
   },
   testButtonText: {
-    color: '#fff',
+    color: Vibe.colors.ink,
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
   instructionsContainer: {
     position: 'absolute',
     bottom: 100,
     left: 20,
     right: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    borderRadius: 15,
-    padding: 20,
+    backgroundColor: Vibe.colors.accentYellow,
+    borderRadius: Vibe.borders.radius,
+    padding: 16,
+    borderWidth: Vibe.borders.width,
+    borderColor: 'rgba(42,42,42,0.18)',
   },
   instructions: {
-    color: '#fff',
+    color: Vibe.colors.ink,
     fontSize: 14,
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: 6,
     lineHeight: 20,
   },
 });

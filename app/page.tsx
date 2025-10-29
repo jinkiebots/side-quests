@@ -14,8 +14,8 @@ export default function Home() {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <h1 className={styles.title}>Dust Bunny Collection</h1>
-        <p className={styles.subtitle}>A collection of delightful prototypes</p>
+        <h1 className={styles.title}>Ghibli Recipes</h1>
+        <p className={styles.subtitle}>This is ghibli recipe</p>
       </header>
 
       <main className={styles.main}>

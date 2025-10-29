@@ -4,8 +4,8 @@ const nextConfig = {
   images: {
     unoptimized: true, // Required for static export
   },
-  basePath: '/dust-bunnies',
-  assetPrefix: '/dust-bunnies',
+  basePath: '/ghibli-recipes',
+  assetPrefix: '/ghibli-recipes',
 }
 
 module.exports = nextConfig

@@ -1,10 +1,10 @@
-# Dust Bunny Collection
+# Ghibli Recipes
 
-A collection of delightful prototypes built with Next.js.
+This is ghibli recipe
 
-## Prototypes
+## Studio Ghibli Recipe Box
 
-- **Studio Ghibli Recipe Box** - Shake your phone to discover magical recipes with handwritten notes from the Ghibli Kitchen!
+Shake your phone to discover magical recipes with handwritten notes from the Ghibli Kitchen!
 
 ## Local Development
 

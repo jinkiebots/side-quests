@@ -1,112 +1,147 @@
-import Link from 'next/link';
+'use client';
+
+import { useRouter } from 'next/navigation';
+import { useState, useRef, useEffect } from 'react';
 import styles from './page.module.css';
 
-const months = [
-  'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
-  'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'
-];
-
-const recipes = [
-  { date: 2, title: 'Totoro Bento', film: 'My Neighbor Totoro', color: 'yellow' },
-  { date: 7, title: 'Spirited Away Ramen', film: 'Spirited Away', color: 'purple' },
-  { date: 9, title: 'Kiki\'s Cake', film: 'Kiki\'s Delivery Service', color: 'pink' },
-  { date: 12, title: 'Howl\'s Breakfast', film: 'Howl\'s Moving Castle', color: 'green' },
-  { date: 16, title: 'Ponyo Ramen', film: 'Ponyo', color: 'blue' },
-  { date: 20, title: 'Chihiro\'s Onigiri', film: 'Spirited Away', color: 'orange' },
-  { date: 24, title: 'Sophie\'s Tea', film: 'Howl\'s Moving Castle', color: 'yellow' },
-  { date: 28, title: 'Mononoke Stew', film: 'Princess Mononoke', color: 'green' },
-  { date: 31, title: 'Halloween Treats', film: 'The Nightmare Before Christmas', color: 'purple' }
-];
-
 export default function Home() {
-  // Generate calendar days for October 2025
-  const firstDay = new Date(2025, 9, 1); // October 1, 2025
-  const lastDay = new Date(2025, 9, 31); // October 31, 2025
-  const startDay = firstDay.getDay(); // Day of week (0 = Sunday)
-  
-  const days = [];
-  
-  // Add empty cells for days before October 1st
-  for (let i = 0; i < startDay; i++) {
-    days.push({ day: null, isCurrentMonth: false });
-  }
-  
-  // Add October days
-  for (let day = 1; day <= 31; day++) {
-    const recipe = recipes.find(r => r.date === day);
-    days.push({ 
-      day, 
-      isCurrentMonth: true, 
-      recipe 
-    });
-  }
+  const router = useRouter();
+  const [position, setPosition] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return {
+        x: (window.innerWidth || 1200) / 2 - 150,
+        y: (window.innerHeight || 800) / 2 - 150
+      };
+    }
+    return { x: 450, y: 250 };
+  });
+  const [isDragging, setIsDragging] = useState(false);
+  const startPos = useRef({ x: 0, y: 0, imgX: 0, imgY: 0 });
+  const hasDragged = useRef(false);
+  const imageRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const centerImage = () => {
+      if (typeof window !== 'undefined' && containerRef.current) {
+        const imageSize = 300;
+        const viewportWidth = window.innerWidth || 1200;
+        const viewportHeight = window.innerHeight || 800;
+        setPosition({
+          x: viewportWidth / 2 - imageSize / 2,
+          y: viewportHeight / 2 - imageSize / 2
+        });
+      }
+    };
+    
+    centerImage();
+    window.addEventListener('resize', centerImage);
+    return () => window.removeEventListener('resize', centerImage);
+  }, []);
+
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!containerRef.current) return;
+    
+    startPos.current = {
+      x: e.clientX,
+      y: e.clientY,
+      imgX: position.x,
+      imgY: position.y
+    };
+    hasDragged.current = false;
+    setIsDragging(false);
+    
+    const handleMouseMove = (e: MouseEvent) => {
+      const dx = e.clientX - startPos.current.x;
+      const dy = e.clientY - startPos.current.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      
+      if (dist > 5) {
+        hasDragged.current = true;
+        setIsDragging(true);
+        
+        const newX = startPos.current.imgX + dx;
+        const newY = startPos.current.imgY + dy;
+        setPosition({ x: newX, y: newY });
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      
+      if (!hasDragged.current) {
+        router.push('/prototypes/ghibli-recipe-box');
+      }
+      hasDragged.current = false;
+    };
+    
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!e.touches[0]) return;
+    
+    const touch = e.touches[0];
+    startPos.current = {
+      x: touch.clientX,
+      y: touch.clientY,
+      imgX: position.x,
+      imgY: position.y
+    };
+    hasDragged.current = false;
+    setIsDragging(false);
+    
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!e.touches[0]) return;
+      
+      const touch = e.touches[0];
+      const dx = touch.clientX - startPos.current.x;
+      const dy = touch.clientY - startPos.current.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      
+      if (dist > 5) {
+        hasDragged.current = true;
+        setIsDragging(true);
+        
+        const newX = startPos.current.imgX + dx;
+        const newY = startPos.current.imgY + dy;
+        setPosition({ x: newX, y: newY });
+      }
+    };
+
+    const handleTouchEnd = () => {
+      setIsDragging(false);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
+      
+      if (!hasDragged.current) {
+        router.push('/prototypes/ghibli-recipe-box');
+      }
+      hasDragged.current = false;
+    };
+    
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.addEventListener('touchend', handleTouchEnd);
+  };
 
   return (
-    <div className={styles.container}>
-      <header className={styles.header}>
-        <h1 className={styles.title}>Ghibli Recipes</h1>
-        <p className={styles.subtitle}>October 2025 Recipe Calendar</p>
-      </header>
-
-      <main className={styles.main}>
-        {/* Month Tabs */}
-        <div className={styles.monthTabs}>
-          {months.map((month, index) => (
-            <button 
-              key={month}
-              className={`${styles.monthTab} ${index === 9 ? styles.activeMonth : ''}`}
-            >
-              {month}
-            </button>
-          ))}
-        </div>
-
-        {/* Calendar */}
-        <div className={styles.calendar}>
-          <div className={styles.calendarHeader}>
-            <div className={styles.dayHeader}>MONDAY</div>
-            <div className={styles.dayHeader}>TUESDAY</div>
-            <div className={styles.dayHeader}>WEDNESDAY</div>
-            <div className={styles.dayHeader}>THURSDAY</div>
-            <div className={styles.dayHeader}>FRIDAY</div>
-            <div className={styles.dayHeader}>SATURDAY</div>
-            <div className={styles.dayHeader}>SUNDAY</div>
-          </div>
-          
-          <div className={styles.calendarGrid}>
-            {days.map((dayData, index) => (
-              <div key={index} className={styles.calendarDay}>
-                {dayData.day && (
-                  <>
-                    <div className={styles.dayNumber}>{dayData.day}</div>
-                    {dayData.recipe && (
-                      <div className={`${styles.recipeNote} ${styles[dayData.recipe.color]}`}>
-                        <div className={styles.recipeTitle}>{dayData.recipe.title}</div>
-                        <div className={styles.recipeFilm}>{dayData.recipe.film}</div>
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Recipe Box Link */}
-        <div className={styles.recipeBoxLink}>
-          <Link href="/prototypes/ghibli-recipe-box" className={styles.recipeBoxButton}>
-            <div className={styles.recipeBoxContent}>
-              <h2>Shake for Random Recipe</h2>
-              <p>Discover magical recipes from Studio Ghibli films</p>
-            </div>
-            <div className={styles.recipeBoxArrow}>→</div>
-          </Link>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <p>Built with Next.js and lots of imagination ✨</p>
-      </footer>
+    <div ref={containerRef} className={styles.container}>
+      <div
+        ref={imageRef}
+        className={`${styles.draggableImage} ${isDragging ? styles.dragging : ''}`}
+        style={{ left: `${position.x}px`, top: `${position.y}px` }}
+        onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStart}
+      >
+        <img src="/images/home/ghibli-recipe.png" alt="Ghibli Recipe" draggable={false} />
+      </div>
     </div>
   );
 }

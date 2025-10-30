@@ -4,6 +4,7 @@ const nextConfig = {
   images: {
     unoptimized: true, // Required for static export
   },
+  // basePath and assetPrefix are only needed for GitHub Pages deployment
   basePath: '/ghibli-recipes',
   assetPrefix: '/ghibli-recipes',
 }

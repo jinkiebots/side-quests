@@ -240,7 +240,7 @@ export default function GhibliRecipeBox() {
                 <div className={styles.watercolorImage}>
                   {currentRecipe.foodIllustration === 'ramen' && (
                     <img 
-                      src="/ghibli-recipes/images/food/ramen.png" 
+                      src="/images/food/ramen.png" 
                       alt="Ramen Bowl" 
                       className={styles.watercolorFoodImage}
                       onError={(e) => {
@@ -255,7 +255,7 @@ export default function GhibliRecipeBox() {
                   )}
                   {currentRecipe.foodIllustration === 'toast' && (
                     <img 
-                      src="/ghibli-recipes/images/food/eggs-and-toast.png" 
+                      src="/images/food/eggs-and-toast.png" 
                       alt="Toast & Egg" 
                       className={styles.watercolorFoodImage}
                       onError={(e) => {
@@ -269,7 +269,7 @@ export default function GhibliRecipeBox() {
                   )}
                   {currentRecipe.foodIllustration === 'soup' && (
                     <img 
-                      src="/ghibli-recipes/images/food/pie.png" 
+                      src="/images/food/pie.png" 
                       alt="Mushroom Soup" 
                       className={styles.watercolorFoodImage}
                       onError={(e) => {
@@ -283,7 +283,7 @@ export default function GhibliRecipeBox() {
                   )}
                   {currentRecipe.foodIllustration === 'cake' && (
                     <img 
-                      src="/ghibli-recipes/images/food/kiki-cake.png" 
+                      src="/images/food/kiki-cake.png" 
                       alt="Magical Cake" 
                       className={styles.watercolorFoodImage}
                       onError={(e) => {
@@ -297,7 +297,7 @@ export default function GhibliRecipeBox() {
                   )}
                   {currentRecipe.foodIllustration === 'bento' && (
                     <img 
-                      src="/ghibli-recipes/images/food/bento.png" 
+                      src="/images/food/bento.png" 
                       alt="Bento Box" 
                       className={styles.watercolorFoodImage}
                       onError={(e) => {
@@ -388,7 +388,7 @@ export default function GhibliRecipeBox() {
         {!showCard && (
           <div className={styles.emptyBox}>
             <img 
-              src="/ghibli-recipes/images/other/notecard-box.png" 
+              src="/images/other/notecard-box.png" 
               alt="Recipe Box" 
               className={`${styles.notecardBoxImage} ${isShaking ? styles.shaking : ''}`}
             />

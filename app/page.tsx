@@ -98,9 +98,70 @@ export default function Home() {
     imagesRef.current = images;
   }, [images]);
 
+  // Track if we've loaded saved positions to prevent centering from overriding them
+  const hasLoadedSavedPositionsRef = useRef(false);
+  const isLoadingSavedPositions = useRef(false);
+  
+  // Load saved positions from sessionStorage on mount (run FIRST)
+  // sessionStorage persists only for the current tab and resets when tab is closed
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      isLoadingSavedPositions.current = true;
+      const saved = sessionStorage.getItem('homepageImagePositions');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (parsed && Array.isArray(parsed) && parsed.length > 0) {
+            setImages(parsed);
+            imagesRef.current = parsed;
+            hasLoadedSavedPositionsRef.current = true;
+            isLoadingSavedPositions.current = false;
+            return; // Exit early if we loaded saved positions
+          }
+        } catch (e) {
+          // Invalid saved data, continue with default
+          console.log('Invalid saved positions, using defaults');
+        }
+      }
+      hasLoadedSavedPositionsRef.current = false; // No saved positions
+      isLoadingSavedPositions.current = false;
+    }
+  }, []);
+
+  // Save positions to localStorage whenever they change (skip first render)
+  const isInitialMount = useRef(true);
+  useEffect(() => {
+    // Skip saving on initial mount or when loading saved positions
+    if (isInitialMount.current || isLoadingSavedPositions.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    if (typeof window !== 'undefined' && images.length > 0) {
+      // Save whenever positions change (after initial load)
+      // Using sessionStorage so positions reset when tab is closed
+      sessionStorage.setItem('homepageImagePositions', JSON.stringify(images));
+    }
+  }, [images]);
+
   useEffect(() => {
     const centerImages = () => {
       if (typeof window !== 'undefined') {
+        // NEVER reset positions if we have saved ones (even on resize)
+        const saved = sessionStorage.getItem('homepageImagePositions');
+        if (saved) {
+          try {
+            const parsed = JSON.parse(saved);
+            if (parsed && Array.isArray(parsed) && parsed.length > 0) {
+              // Restore saved positions if they exist
+              if (hasLoadedSavedPositionsRef.current) {
+                return; // Don't reset positions if we have saved ones
+              }
+            }
+          } catch (e) {
+            // Invalid saved data, continue with default
+          }
+        }
+        
         const viewportWidth = window.innerWidth || 1200;
         const viewportHeight = window.innerHeight || 800;
 
@@ -174,12 +235,31 @@ export default function Home() {
         }
 
         setImages(next);
+        hasLoadedSavedPositionsRef.current = false; // Mark that we're using default positions
       }
     };
     
-    centerImages();
-    window.addEventListener('resize', centerImages);
-    return () => window.removeEventListener('resize', centerImages);
+    // Only center if we haven't loaded saved positions
+    // Give localStorage load effect time to run first
+    const timer = setTimeout(() => {
+      if (!hasLoadedSavedPositionsRef.current) {
+        centerImages();
+      }
+    }, 100);
+    
+    const handleResize = () => {
+      // On resize, only center if there are no saved positions
+      const saved = sessionStorage.getItem('homepageImagePositions');
+      if (!saved) {
+        centerImages();
+      }
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
   const handleMouseDown = (id: string, e: React.MouseEvent<HTMLDivElement>) => {

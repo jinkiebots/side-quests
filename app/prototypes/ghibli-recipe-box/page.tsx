@@ -217,12 +217,19 @@ export default function GhibliRecipeBox() {
       if (totalDelta > threshold && 
           currentTime - lastShakeTime > minTimeBetweenShakes) {
         lastShakeTime = currentTime;
-        // Trigger shake
+        // Trigger shake - keep card visible, just change recipe
         setIsShaking(true);
-        setShowCard(false);
+        const wasShowing = showCard && currentRecipe;
         
         setTimeout(() => {
-          const randomIndex = Math.floor(Math.random() * recipes.length);
+          // Pick a different recipe if one is already showing
+          let randomIndex = Math.floor(Math.random() * recipes.length);
+          if (wasShowing && currentRecipe) {
+            // Make sure we pick a different recipe
+            while (recipes[randomIndex].id === currentRecipe.id && recipes.length > 1) {
+              randomIndex = Math.floor(Math.random() * recipes.length);
+            }
+          }
           setCurrentRecipe(recipes[randomIndex]);
           setIsShaking(false);
           setShowCard(true);
@@ -237,7 +244,7 @@ export default function GhibliRecipeBox() {
     return () => {
       window.removeEventListener('devicemotion', handleShake);
     };
-  }, [motionPermissionGranted]);
+  }, [motionPermissionGranted, showCard, currentRecipe]);
 
   const shakeRecipeBox = () => {
     setIsShaking(true);
@@ -285,7 +292,12 @@ export default function GhibliRecipeBox() {
         </div>
 
         {showCard && currentRecipe && (
-          <div className={`${styles.recipeCard} ${isShaking ? styles.shaking : ''}`}>
+          <div 
+            className={`${styles.recipeCard} ${isShaking ? styles.shaking : ''}`}
+            style={{
+              backgroundImage: `url(${getImagePath('/images/other/notecard.png')}), linear-gradient(135deg, #fdf6e3 0%, #f4f1e8 25%, #ede8d8 50%, #e6ddd0 75%, #ddd4c7 100%)`
+            }}
+          >
             <div className={styles.cardHeader}>
               <h2 className={styles.recipeTitle}>{currentRecipe.title}</h2>
               <p className={styles.filmSource}>from {currentRecipe.ghibliFilm}</p>

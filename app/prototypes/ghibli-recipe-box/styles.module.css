@@ -117,10 +117,7 @@
 }
 
 .recipeCard {
-  background: 
-    url('/images/other/notecard.png'),
-    /* Notecard base - cream/off-white */
-    linear-gradient(135deg, #fdf6e3 0%, #f4f1e8 25%, #ede8d8 50%, #e6ddd0 75%, #ddd4c7 100%);
+  /* Background image is set via inline style in component for basePath support */
   background-position: center;
   background-size: 100% 100%, auto;
   background-repeat: no-repeat;

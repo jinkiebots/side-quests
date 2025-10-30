@@ -26,47 +26,60 @@ export default function Home() {
   const router = useRouter();
   const [images, setImages] = useState<DraggableImage[]>(() => {
     // Default positions for SSR - will be updated in useEffect on client
-    const centerX = 525;
-    const centerY = 325;
+    // Using default desktop positions as fallback
+    const centerX = 600;
+    const centerY = 400;
+    const ghibliSize = 300;
+    const frogSize = 200;
+    const mailSize = 300;
+    const bunnySize = 200;
+    const ipodSize = 300;
+    const pinSize = 80;
+    const spacingX = 250;
+    const spacingY = 125;
+    const pinOffsetX = mailSize * 0.7;
+    const pinOffsetY = Math.round(pinSize * 0.15);
+    
+    const mailPos = { x: centerX + spacingX * 0.7 - mailSize / 2, y: centerY - spacingY * 0.7 - mailSize / 2 };
     
     return [
       {
         id: 'ghibli-recipe',
         src: '/images/home/ghibli-recipe.png',
         alt: 'Ghibli Recipe',
-        position: { x: centerX, y: centerY },
+        position: { x: centerX - ghibliSize / 2, y: centerY - ghibliSize / 2 },
         navigateTo: '/prototypes/ghibli-recipe-box'
       },
       {
         id: 'frog',
         src: '/images/home/frog.png',
         alt: 'Frog',
-        position: { x: centerX - 250, y: centerY - 125 }
+        position: { x: centerX - spacingX - frogSize / 2, y: centerY - spacingY - frogSize / 2 }
       },
       {
         id: 'mail',
         src: '/images/home/mail.png',
         alt: 'Mail',
-        position: { x: centerX + 200, y: centerY - 100 }
-      },
-      {
-        id: 'pin',
-        src: '/images/home/pin.png',
-        alt: 'Pin',
-        position: { x: centerX - 75, y: centerY + 225 }
+        position: mailPos
       },
       {
         id: 'ipod',
         src: '/images/home/record-player.png',
         alt: 'iPod',
-        position: { x: centerX + 150, y: centerY + 150 },
+        position: { x: centerX + spacingX * 0.5 - ipodSize / 2, y: centerY + spacingY * 1.0 - ipodSize / 2 },
         navigateTo: '/prototypes/ipod-player'
       },
       {
         id: 'bunny',
         src: '/images/home/bunny.png',
         alt: 'Bunny',
-        position: { x: centerX - 300, y: centerY + 100 }
+        position: { x: centerX - spacingX * 1.0 - bunnySize / 2, y: centerY + spacingY * 0.4 - bunnySize / 2 }
+      },
+      {
+        id: 'pin',
+        src: '/images/home/pin.png',
+        alt: 'Pin',
+        position: { x: mailPos.x + pinOffsetX, y: mailPos.y + pinOffsetY }
       }
     ];
   });

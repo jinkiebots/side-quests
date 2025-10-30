@@ -118,7 +118,7 @@
 
 .recipeCard {
   background: 
-    url('/ghibli-recipes/images/other/notecard.png'),
+    url('/images/other/notecard.png'),
     /* Notecard base - cream/off-white */
     linear-gradient(135deg, #fdf6e3 0%, #f4f1e8 25%, #ede8d8 50%, #e6ddd0 75%, #ddd4c7 100%);
   background-position: center;

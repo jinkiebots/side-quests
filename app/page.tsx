@@ -32,7 +32,8 @@ export default function Home() {
     return [
       {
         id: 'ghibli-recipe',
-        text: 'ghibli recipe',
+        src: '/images/home/ghibli-recipe.png',
+        alt: 'Ghibli Recipe',
         position: { x: centerX, y: centerY },
         navigateTo: '/prototypes/ghibli-recipe-box'
       },
@@ -104,7 +105,8 @@ export default function Home() {
         const next = [
           {
             id: 'ghibli-recipe',
-            text: 'ghibli recipe',
+            src: getImagePath('/images/home/ghibli-recipe.png'),
+            alt: 'Ghibli Recipe',
             position: { x: centerX, y: centerY },
             navigateTo: '/prototypes/ghibli-recipe-box'
           },

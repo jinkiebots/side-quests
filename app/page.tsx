@@ -326,7 +326,7 @@ export default function Home() {
       {images.map((image) => (
         <div
           key={image.id}
-          className={`${styles.draggableImage} ${image.id === 'pin' ? styles.pin : ''} ${image.id === 'frog' ? styles.frog : ''} ${image.id === 'bunny' ? styles.bunny : ''} ${image.id === 'ghibli-recipe' ? styles.textItem : ''}`}
+          className={`${styles.draggableImage} ${image.id === 'pin' ? styles.pin : ''} ${image.id === 'frog' ? styles.frog : ''} ${image.id === 'bunny' ? styles.bunny : ''}`}
           style={{ 
             left: `${image.position.x}px`, 
             top: `${image.position.y}px`,

@@ -21,10 +21,10 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 If you prefer GitHub Pages, you'll need to configure static export:
 
-1. Update `next.config.js` to include:
+1. The `next.config.js` is already configured with:
    ```js
    output: 'export',
-   basePath: '/dust-bunny-collection',
+   basePath: '/ghibli-recipes',
    ```
 
 2. Follow the GitHub Actions workflow that's already set up in `.github/workflows/deploy.yml`

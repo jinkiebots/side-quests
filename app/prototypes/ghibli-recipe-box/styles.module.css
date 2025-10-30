@@ -1,7 +1,7 @@
 /* Custom Handwritten Font - Add your font files here */
 @font-face {
   font-family: 'CustomHandwritten';
-  src: url('/fonts/MessyHandwritten-Regular.ttf') format('truetype');
+  src: url('/ghibli-recipes/fonts/MessyHandwritten-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -118,7 +118,7 @@
 
 .recipeCard {
   background: 
-    url('/images/other/notecard.png'),
+    url('/ghibli-recipes/images/other/notecard.png'),
     /* Notecard base - cream/off-white */
     linear-gradient(135deg, #fdf6e3 0%, #f4f1e8 25%, #ede8d8 50%, #e6ddd0 75%, #ddd4c7 100%);
   background-position: center;

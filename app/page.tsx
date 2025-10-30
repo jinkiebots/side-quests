@@ -88,52 +88,64 @@ export default function Home() {
   useEffect(() => {
     const centerImages = () => {
       if (typeof window !== 'undefined') {
-        const imageSize = 150;
         const viewportWidth = window.innerWidth || 1200;
         const viewportHeight = window.innerHeight || 800;
-        const centerX = viewportWidth / 2 - imageSize / 2;
-        const centerY = viewportHeight / 2 - imageSize / 2;
 
         // Sizes matching CSS breakpoints
         const isMobile = viewportWidth <= 480;
         const isTablet = viewportWidth > 480 && viewportWidth <= 768;
+        
+        // Get actual image sizes
+        const ghibliSize = isMobile ? 200 : isTablet ? 240 : 300;
+        const frogSize = isMobile ? 133 : isTablet ? 160 : 200;
         const mailSize = isMobile ? 200 : isTablet ? 240 : 300;
+        const bunnySize = isMobile ? 133 : isTablet ? 160 : 200;
+        const ipodSize = isMobile ? 200 : isTablet ? 240 : 300;
         const pinSize = isMobile ? 53 : isTablet ? 64 : 80;
-        const pinOffsetX = mailSize * 0.7; // positioned even more to the right
-        const pinOffsetY = Math.round(pinSize * 0.15); // even lower, overlapping more with mail
+        
+        // Calculate center with proper spacing for mobile
+        const centerX = viewportWidth / 2;
+        const centerY = viewportHeight / 2;
+        
+        // Smaller spacing on mobile to ensure all images fit within viewport
+        const spacingX = isMobile ? viewportWidth * 0.18 : 250;
+        const spacingY = isMobile ? viewportHeight * 0.15 : 125;
+        
+        const pinOffsetX = mailSize * 0.7;
+        const pinOffsetY = Math.round(pinSize * 0.15);
         
         const next = [
           {
             id: 'ghibli-recipe',
             src: getImagePath('/images/home/ghibli-recipe.png'),
             alt: 'Ghibli Recipe',
-            position: { x: centerX, y: centerY },
+            position: { x: centerX - ghibliSize / 2, y: centerY - ghibliSize / 2 },
             navigateTo: '/prototypes/ghibli-recipe-box'
           },
           {
             id: 'frog',
             src: getImagePath('/images/home/frog.png'),
             alt: 'Frog',
-            position: { x: centerX - 250, y: centerY - 125 }
+            position: { x: centerX - spacingX - frogSize / 2, y: centerY - spacingY - frogSize / 2 }
           },
           {
             id: 'mail',
             src: getImagePath('/images/home/mail.png'),
             alt: 'Mail',
-            position: { x: centerX + 200, y: centerY - 100 }
+            position: { x: centerX + spacingX * 0.7 - mailSize / 2, y: centerY - spacingY * 0.7 - mailSize / 2 }
           },
           {
             id: 'ipod',
             src: getImagePath('/images/home/record-player.png'),
             alt: 'iPod',
-            position: { x: centerX + 150, y: centerY + 150 },
+            position: { x: centerX + spacingX * 0.5 - ipodSize / 2, y: centerY + spacingY * 1.0 - ipodSize / 2 },
             navigateTo: '/prototypes/ipod-player'
           },
           {
             id: 'bunny',
             src: getImagePath('/images/home/bunny.png'),
             alt: 'Bunny',
-            position: { x: centerX - 300, y: centerY + 100 }
+            position: { x: centerX - spacingX * 1.0 - bunnySize / 2, y: centerY + spacingY * 0.4 - bunnySize / 2 }
           }
         ] as DraggableImage[];
 

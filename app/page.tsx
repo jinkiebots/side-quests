@@ -15,8 +15,9 @@ const getImagePath = (path: string) => {
 
 interface DraggableImage {
   id: string;
-  src: string;
-  alt: string;
+  src?: string;
+  alt?: string;
+  text?: string;
   position: { x: number; y: number };
   navigateTo?: string;
 }
@@ -31,8 +32,7 @@ export default function Home() {
     return [
       {
         id: 'ghibli-recipe',
-        src: '/images/home/ghibli-recipe.png',
-        alt: 'Ghibli Recipe',
+        text: 'ghibli recipe',
         position: { x: centerX, y: centerY },
         navigateTo: '/prototypes/ghibli-recipe-box'
       },
@@ -104,8 +104,7 @@ export default function Home() {
         const next = [
           {
             id: 'ghibli-recipe',
-            src: getImagePath('/images/home/ghibli-recipe.png'),
-            alt: 'Ghibli Recipe',
+            text: 'ghibli recipe',
             position: { x: centerX, y: centerY },
             navigateTo: '/prototypes/ghibli-recipe-box'
           },
@@ -325,7 +324,7 @@ export default function Home() {
       {images.map((image) => (
         <div
           key={image.id}
-          className={`${styles.draggableImage} ${image.id === 'pin' ? styles.pin : ''} ${image.id === 'frog' ? styles.frog : ''} ${image.id === 'bunny' ? styles.bunny : ''}`}
+          className={`${styles.draggableImage} ${image.id === 'pin' ? styles.pin : ''} ${image.id === 'frog' ? styles.frog : ''} ${image.id === 'bunny' ? styles.bunny : ''} ${image.id === 'ghibli-recipe' ? styles.textItem : ''}`}
           style={{ 
             left: `${image.position.x}px`, 
             top: `${image.position.y}px`,
@@ -334,7 +333,11 @@ export default function Home() {
           onMouseDown={(e) => handleMouseDown(image.id, e)}
           onTouchStart={(e) => handleTouchStart(image.id, e)}
         >
-          <img src={image.src} alt={image.alt} draggable={false} />
+          {image.text ? (
+            <span className={styles.textLabel}>{image.text}</span>
+          ) : (
+            <img src={image.src} alt={image.alt} draggable={false} />
+          )}
         </div>
       ))}
     </div>

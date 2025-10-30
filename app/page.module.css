@@ -64,6 +64,37 @@
   pointer-events: none;
 }
 
+.draggableImage.textItem {
+  width: auto;
+  height: auto;
+  padding: 20px 40px;
+  background: transparent;
+}
+
+.textLabel {
+  font-family: 'CustomHandwritten', cursive, sans-serif;
+  font-size: 3rem;
+  font-weight: bold;
+  color: #3a2a1a;
+  text-transform: lowercase;
+  letter-spacing: 2px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .textLabel {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .textLabel {
+    font-size: 2rem;
+  }
+}
+
 @media (max-width: 768px) {
   .draggableImage {
     width: 240px;

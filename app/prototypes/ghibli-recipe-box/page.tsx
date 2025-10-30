@@ -163,52 +163,81 @@ export default function GhibliRecipeBox() {
   const [currentRecipe, setCurrentRecipe] = useState<Recipe | null>(null);
   const [isShaking, setIsShaking] = useState(false);
   const [showCard, setShowCard] = useState(false);
+  const [motionPermissionGranted, setMotionPermissionGranted] = useState(false);
 
-  // Shake detection
+  // Request motion permission (required for iOS 13+)
+  const requestMotionPermission = async () => {
+    if (typeof DeviceMotionEvent !== 'undefined' && 
+        typeof (DeviceMotionEvent as any).requestPermission === 'function') {
+      try {
+        const permission = await (DeviceMotionEvent as any).requestPermission();
+        if (permission === 'granted') {
+          setMotionPermissionGranted(true);
+          return true;
+        } else {
+          console.log('Device motion permission denied');
+          return false;
+        }
+      } catch (error) {
+        console.log('Error requesting device motion permission:', error);
+        return false;
+      }
+    } else {
+      // For devices that don't require permission (older iOS, Android)
+      setMotionPermissionGranted(true);
+      return true;
+    }
+  };
+
+  // Shake detection - only active after permission is granted
   useEffect(() => {
+    if (!motionPermissionGranted) return;
+
     let lastShakeTime = 0;
+    let lastAcceleration = { x: 0, y: 0, z: 0 };
     const threshold = 15; // Adjust sensitivity
     const minTimeBetweenShakes = 1000; // 1 second
 
     const handleShake = (event: DeviceMotionEvent) => {
-      const acceleration = event.accelerationIncludingGravity;
+      // Try accelerationIncludingGravity first (iOS), then acceleration (Android)
+      const acceleration = event.accelerationIncludingGravity || event.acceleration;
       if (!acceleration) return;
 
       const { x, y, z } = acceleration;
       if (x === null || y === null || z === null) return;
       
-      const accelerationMagnitude = Math.sqrt(x * x + y * y + z * z);
+      // Calculate change in acceleration (more accurate for shake detection)
+      const deltaX = Math.abs(x - lastAcceleration.x);
+      const deltaY = Math.abs(y - lastAcceleration.y);
+      const deltaZ = Math.abs(z - lastAcceleration.z);
+      
+      const totalDelta = deltaX + deltaY + deltaZ;
       const currentTime = Date.now();
 
-      if (accelerationMagnitude > threshold && 
+      if (totalDelta > threshold && 
           currentTime - lastShakeTime > minTimeBetweenShakes) {
         lastShakeTime = currentTime;
-        shakeRecipeBox();
+        // Trigger shake
+        setIsShaking(true);
+        setShowCard(false);
+        
+        setTimeout(() => {
+          const randomIndex = Math.floor(Math.random() * recipes.length);
+          setCurrentRecipe(recipes[randomIndex]);
+          setIsShaking(false);
+          setShowCard(true);
+        }, 1000);
       }
+      
+      lastAcceleration = { x, y, z };
     };
 
-    const requestPermission = async () => {
-      if (typeof DeviceMotionEvent !== 'undefined' && 
-          typeof (DeviceMotionEvent as any).requestPermission === 'function') {
-        try {
-          const permission = await (DeviceMotionEvent as any).requestPermission();
-          if (permission === 'granted') {
-            window.addEventListener('devicemotion', handleShake);
-          }
-        } catch (error) {
-          console.log('Device motion permission denied');
-        }
-      } else {
-        window.addEventListener('devicemotion', handleShake);
-      }
-    };
-
-    requestPermission();
+    window.addEventListener('devicemotion', handleShake, { passive: true });
 
     return () => {
       window.removeEventListener('devicemotion', handleShake);
     };
-  }, []);
+  }, [motionPermissionGranted]);
 
   const shakeRecipeBox = () => {
     setIsShaking(true);
@@ -222,9 +251,22 @@ export default function GhibliRecipeBox() {
     }, 1000);
   };
 
-  const handleManualShake = () => {
+  const handleManualShake = async () => {
+    // Request permission if not already granted (for iOS)
+    if (!motionPermissionGranted) {
+      await requestMotionPermission();
+    }
     shakeRecipeBox();
   };
+
+  // Auto-request permission on component mount for non-iOS devices
+  useEffect(() => {
+    // Only auto-request if permission API doesn't exist (non-iOS)
+    if (typeof DeviceMotionEvent === 'undefined' || 
+        typeof (DeviceMotionEvent as any).requestPermission !== 'function') {
+      setMotionPermissionGranted(true);
+    }
+  }, []);
 
   return (
     <div className={styles.container}>

@@ -241,10 +241,18 @@ export default function GhibliRecipeBox() {
 
   const shakeRecipeBox = () => {
     setIsShaking(true);
-    setShowCard(false);
+    // Keep the card visible - don't hide it, just change the recipe
+    const wasShowing = showCard && currentRecipe;
     
     setTimeout(() => {
-      const randomIndex = Math.floor(Math.random() * recipes.length);
+      // Pick a different recipe if one is already showing
+      let randomIndex = Math.floor(Math.random() * recipes.length);
+      if (wasShowing && currentRecipe) {
+        // Make sure we pick a different recipe
+        while (recipes[randomIndex].id === currentRecipe.id && recipes.length > 1) {
+          randomIndex = Math.floor(Math.random() * recipes.length);
+        }
+      }
       setCurrentRecipe(recipes[randomIndex]);
       setIsShaking(false);
       setShowCard(true);

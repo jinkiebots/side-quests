@@ -5,8 +5,9 @@ const nextConfig = {
     unoptimized: true, // Required for static export
   },
   // basePath and assetPrefix are only needed for GitHub Pages deployment
-  basePath: '/ghibli-recipes',
-  assetPrefix: '/ghibli-recipes',
+  // Commented out for local development - uncomment before deploying
+  // basePath: '/ghibli-recipes',
+  // assetPrefix: '/ghibli-recipes',
 }
 
 module.exports = nextConfig

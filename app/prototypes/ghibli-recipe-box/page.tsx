@@ -255,7 +255,7 @@ export default function GhibliRecipeBox() {
                   )}
                   {currentRecipe.foodIllustration === 'toast' && (
                     <img 
-                      src="/images/food/eggs-and-toast.png" 
+                      src="/ghibli-recipes/images/food/eggs-and-toast.png" 
                       alt="Toast & Egg" 
                       className={styles.watercolorFoodImage}
                       onError={(e) => {
@@ -269,7 +269,7 @@ export default function GhibliRecipeBox() {
                   )}
                   {currentRecipe.foodIllustration === 'soup' && (
                     <img 
-                      src="/images/food/pie.png" 
+                      src="/ghibli-recipes/images/food/pie.png" 
                       alt="Mushroom Soup" 
                       className={styles.watercolorFoodImage}
                       onError={(e) => {

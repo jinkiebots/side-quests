@@ -140,7 +140,7 @@ export default function Home() {
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
       >
-        <img src="/images/home/ghibli-recipe.png" alt="Ghibli Recipe" draggable={false} />
+        <img src="/ghibli-recipes/images/home/ghibli-recipe.png" alt="Ghibli Recipe" draggable={false} />
       </div>
     </div>
   );

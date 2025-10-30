@@ -1,41 +1,238 @@
+/* Custom Handwritten Font */
+@font-face {
+  font-family: 'CustomHandwritten';
+  src: url('/ghibli-recipes/fonts/MessyHandwritten-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 .container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #fefefe 0%, #faf9f7 25%, #f7f5f2 50%, #f4f2ef 75%, #f1efec 100%);
   padding: 2rem;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'CustomHandwritten', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(120, 255, 198, 0.1) 0%, transparent 50%);
+  pointer-events: none;
 }
 
 .header {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 1;
 }
 
 .title {
   font-size: 3rem;
   font-weight: 700;
-  color: white;
+  color: #8b4513;
   margin: 0 0 1rem 0;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  transform: rotate(-1deg);
+  letter-spacing: 2px;
 }
 
 .subtitle {
-  font-size: 1.2rem;
-  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.4rem;
+  color: #6b4423;
   margin: 0;
+  font-weight: 400;
+  transform: rotate(0.5deg);
+  letter-spacing: 1px;
 }
 
 .main {
   max-width: 1200px;
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
 }
 
-.prototypesGrid {
+/* Month Tabs */
+.monthTabs {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.monthTab {
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-family: 'CustomHandwritten', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  transform: rotate(-0.5deg);
+}
+
+.monthTab:hover {
+  background: #f8f8f8;
+  transform: rotate(0deg) scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.activeMonth {
+  background: #8b4513;
+  color: white;
+  border-color: #6b4423;
+  transform: rotate(0deg) scale(1.1);
+  box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+}
+
+/* Calendar */
+.calendar {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 2px solid rgba(139, 69, 19, 0.2);
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.calendar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(101, 67, 33, 0.05) 0%, transparent 60%),
+    radial-gradient(circle at 80% 70%, rgba(139, 69, 19, 0.03) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.calendarHeader {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  margin-bottom: 1rem;
+  background: #f0f0f0;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-.prototypeCard {
+.dayHeader {
+  background: #8b4513;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+}
+
+.calendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background: #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.calendarDay {
+  background: white;
+  min-height: 120px;
+  padding: 0.5rem;
+  position: relative;
+  border: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+}
+
+.dayNumber {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+  text-align: right;
+}
+
+.recipeNote {
+  background: #fff3cd;
+  border-radius: 8px;
+  padding: 0.5rem;
+  margin-top: auto;
+  border-left: 3px solid #ffc107;
+  font-size: 0.8rem;
+  transform: rotate(-1deg);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.recipeTitle {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.25rem;
+}
+
+.recipeFilm {
+  color: #666;
+  font-size: 0.7rem;
+  font-style: italic;
+}
+
+/* Color variants for recipe notes */
+.yellow {
+  background: #fff3cd;
+  border-left-color: #ffc107;
+}
+
+.purple {
+  background: #e2d9f3;
+  border-left-color: #6f42c1;
+}
+
+.pink {
+  background: #f8d7da;
+  border-left-color: #dc3545;
+}
+
+.green {
+  background: #d1e7dd;
+  border-left-color: #198754;
+}
+
+.blue {
+  background: #cff4fc;
+  border-left-color: #0dcaf0;
+}
+
+.orange {
+  background: #ffeaa7;
+  border-left-color: #fd79a8;
+}
+
+/* Recipe Box Link */
+.recipeBoxLink {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.recipeBoxButton {
   background: white;
   border-radius: 16px;
   padding: 2rem;
@@ -43,64 +240,80 @@
   color: inherit;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  display: flex;
+  display: inline-flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(139, 69, 19, 0.2);
+  max-width: 500px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
 }
 
-.prototypeCard:hover {
-  transform: translateY(-8px);
+.recipeBoxButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(101, 67, 33, 0.05) 0%, transparent 60%),
+    radial-gradient(circle at 80% 70%, rgba(139, 69, 19, 0.03) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.recipeBoxButton:hover {
+  transform: translateY(-8px) rotate(-1deg);
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
 }
 
-.cardContent {
+.recipeBoxContent {
   flex: 1;
+  position: relative;
+  z-index: 1;
 }
 
-.prototypeTitle {
+.recipeBoxContent h2 {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #333;
-  margin: 0 0 1rem 0;
+  color: #8b4513;
+  margin: 0 0 0.5rem 0;
+  transform: rotate(-0.5deg);
 }
 
-.prototypeDescription {
+.recipeBoxContent p {
   color: #666;
   line-height: 1.6;
-  margin: 0 0 1.5rem 0;
+  margin: 0;
+  font-size: 1rem;
 }
 
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.tag {
-  background: #f0f0f0;
-  color: #666;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-.cardArrow {
+.recipeBoxArrow {
   font-size: 1.5rem;
-  color: #667eea;
+  color: #8b4513;
   margin-left: 1rem;
   transition: transform 0.3s ease;
+  position: relative;
+  z-index: 1;
 }
 
-.prototypeCard:hover .cardArrow {
+.recipeBoxButton:hover .recipeBoxArrow {
   transform: translateX(4px);
 }
 
 .footer {
   text-align: center;
   margin-top: 4rem;
-  color: rgba(255, 255, 255, 0.8);
+  color: #6b4423;
+  position: relative;
+  z-index: 1;
+}
+
+.footer p {
+  font-size: 1.1rem;
+  font-style: italic;
+  transform: rotate(0.5deg);
 }
 
 @media (max-width: 768px) {
@@ -112,11 +325,68 @@
     font-size: 2rem;
   }
   
-  .prototypesGrid {
-    grid-template-columns: 1fr;
+  .subtitle {
+    font-size: 1.1rem;
   }
   
-  .prototypeCard {
+  .calendar {
+    padding: 1rem;
+  }
+  
+  .calendarDay {
+    min-height: 80px;
+    padding: 0.25rem;
+  }
+  
+  .dayNumber {
+    font-size: 1rem;
+  }
+  
+  .recipeNote {
+    padding: 0.25rem;
+    font-size: 0.7rem;
+  }
+  
+  .recipeTitle {
+    font-size: 0.8rem;
+  }
+  
+  .recipeFilm {
+    font-size: 0.6rem;
+  }
+  
+  .monthTabs {
+    gap: 0.25rem;
+  }
+  
+  .monthTab {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+  }
+  
+  .recipeBoxButton {
     padding: 1.5rem;
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .recipeBoxArrow {
+    margin-left: 0;
+    margin-top: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .calendarDay {
+    min-height: 60px;
+  }
+  
+  .dayHeader {
+    padding: 0.5rem;
+    font-size: 0.8rem;
+  }
+  
+  .recipeNote {
+    font-size: 0.6rem;
   }
 }

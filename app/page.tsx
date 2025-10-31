@@ -66,8 +66,7 @@ export default function Home() {
         id: 'ipod',
         src: '/images/home/record-player.png',
         alt: 'iPod',
-        position: { x: centerX + spacingX * 0.5 - ipodSize / 2, y: centerY + spacingY * 1.0 - ipodSize / 2 },
-        navigateTo: '/prototypes/ipod-player'
+        position: { x: centerX + spacingX * 0.5 - ipodSize / 2, y: centerY + spacingY * 1.0 - ipodSize / 2 }
       },
       {
         id: 'bunny',
@@ -212,8 +211,7 @@ export default function Home() {
             id: 'ipod',
             src: getImagePath('/images/home/record-player.png'),
             alt: 'iPod',
-            position: { x: centerX + spacingX * 0.5 - ipodSize / 2, y: centerY + spacingY * 1.0 - ipodSize / 2 },
-            navigateTo: '/prototypes/ipod-player'
+            position: { x: centerX + spacingX * 0.5 - ipodSize / 2, y: centerY + spacingY * 1.0 - ipodSize / 2 }
           },
           {
             id: 'bunny',

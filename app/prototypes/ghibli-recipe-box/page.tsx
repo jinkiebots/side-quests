@@ -164,6 +164,7 @@ export default function GhibliRecipeBox() {
   const [isShaking, setIsShaking] = useState(false);
   const [showCard, setShowCard] = useState(false);
   const [motionPermissionGranted, setMotionPermissionGranted] = useState(false);
+  const [contentVisible, setContentVisible] = useState(true);
 
   // Request motion permission (required for iOS 13+)
   const requestMotionPermission = async () => {
@@ -217,8 +218,10 @@ export default function GhibliRecipeBox() {
       if (totalDelta > threshold && 
           currentTime - lastShakeTime > minTimeBetweenShakes) {
         lastShakeTime = currentTime;
-        // Trigger shake - keep card visible, just change recipe
+        // Trigger shake - hide content, shake, then show new recipe
         setIsShaking(true);
+        setContentVisible(false); // Hide all text and notecard content
+        
         const wasShowing = showCard && currentRecipe;
         
         // Change recipe halfway through animation for better effect
@@ -233,6 +236,11 @@ export default function GhibliRecipeBox() {
           }
           setCurrentRecipe(recipes[randomIndex]);
           setShowCard(true);
+          
+          // Animate content back in after a brief delay
+          setTimeout(() => {
+            setContentVisible(true);
+          }, 100);
         }, 900); // Change recipe halfway through animation
         
         // End shaking animation after full duration
@@ -253,7 +261,8 @@ export default function GhibliRecipeBox() {
 
   const shakeRecipeBox = () => {
     setIsShaking(true);
-    // Keep the card visible - don't hide it, just change the recipe
+    setContentVisible(false); // Hide all text and notecard content
+    
     const wasShowing = showCard && currentRecipe;
     
     // Change recipe halfway through animation for better effect
@@ -268,6 +277,11 @@ export default function GhibliRecipeBox() {
       }
       setCurrentRecipe(recipes[randomIndex]);
       setShowCard(true);
+      
+      // Animate content back in after a brief delay
+      setTimeout(() => {
+        setContentVisible(true);
+      }, 100);
     }, 900); // Change recipe halfway through animation
     
     // End shaking animation after full duration
@@ -303,7 +317,7 @@ export default function GhibliRecipeBox() {
 
         {showCard && currentRecipe && (
           <div 
-            className={styles.recipeCard}
+            className={`${styles.recipeCard} ${contentVisible ? styles.contentVisible : styles.contentHidden}`}
             style={{
               backgroundImage: `url(${getImagePath('/images/other/notecard.png')}), linear-gradient(135deg, #fdf6e3 0%, #f4f1e8 25%, #ede8d8 50%, #e6ddd0 75%, #ddd4c7 100%)`
             }}

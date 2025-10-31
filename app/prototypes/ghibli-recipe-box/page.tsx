@@ -195,7 +195,7 @@ export default function GhibliRecipeBox() {
 
     let lastShakeTime = 0;
     let lastAcceleration = { x: 0, y: 0, z: 0 };
-    const threshold = 15; // Adjust sensitivity
+    const threshold = 25; // Higher threshold - requires vigorous shaking
     const minTimeBetweenShakes = 1000; // 1 second
 
     const handleShake = (event: DeviceMotionEvent) => {
@@ -221,6 +221,7 @@ export default function GhibliRecipeBox() {
         setIsShaking(true);
         const wasShowing = showCard && currentRecipe;
         
+        // Change recipe halfway through animation for better effect
         setTimeout(() => {
           // Pick a different recipe if one is already showing
           let randomIndex = Math.floor(Math.random() * recipes.length);
@@ -231,8 +232,12 @@ export default function GhibliRecipeBox() {
             }
           }
           setCurrentRecipe(recipes[randomIndex]);
-          setIsShaking(false);
           setShowCard(true);
+        }, 900); // Change recipe halfway through animation
+        
+        // End shaking animation after full duration
+        setTimeout(() => {
+          setIsShaking(false);
         }, 1800); // Match animation duration (1.8 seconds)
       }
       
@@ -251,6 +256,7 @@ export default function GhibliRecipeBox() {
     // Keep the card visible - don't hide it, just change the recipe
     const wasShowing = showCard && currentRecipe;
     
+    // Change recipe halfway through animation for better effect
     setTimeout(() => {
       // Pick a different recipe if one is already showing
       let randomIndex = Math.floor(Math.random() * recipes.length);
@@ -261,8 +267,12 @@ export default function GhibliRecipeBox() {
         }
       }
       setCurrentRecipe(recipes[randomIndex]);
-      setIsShaking(false);
       setShowCard(true);
+    }, 900); // Change recipe halfway through animation
+    
+    // End shaking animation after full duration
+    setTimeout(() => {
+      setIsShaking(false);
     }, 1800); // Match animation duration (1.8 seconds)
   };
 
@@ -285,7 +295,7 @@ export default function GhibliRecipeBox() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.notecardBackground}>
+      <div className={`${styles.notecardBackground} ${isShaking ? styles.shaking : ''}`}>
         <div className={styles.header}>
           <h1 className={styles.title}>Studio Ghibli Recipe Box</h1>
           <p className={styles.subtitle}>Shake your device to discover a magical recipe!</p>
@@ -293,7 +303,7 @@ export default function GhibliRecipeBox() {
 
         {showCard && currentRecipe && (
           <div 
-            className={`${styles.recipeCard} ${isShaking ? styles.shaking : ''}`}
+            className={styles.recipeCard}
             style={{
               backgroundImage: `url(${getImagePath('/images/other/notecard.png')}), linear-gradient(135deg, #fdf6e3 0%, #f4f1e8 25%, #ede8d8 50%, #e6ddd0 75%, #ddd4c7 100%)`
             }}

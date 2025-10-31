@@ -233,7 +233,7 @@ export default function GhibliRecipeBox() {
           setCurrentRecipe(recipes[randomIndex]);
           setIsShaking(false);
           setShowCard(true);
-        }, 1000);
+        }, 1800); // Match animation duration (1.8 seconds)
       }
       
       lastAcceleration = { x, y, z };
@@ -263,7 +263,7 @@ export default function GhibliRecipeBox() {
       setCurrentRecipe(recipes[randomIndex]);
       setIsShaking(false);
       setShowCard(true);
-    }, 1000);
+    }, 1800); // Match animation duration (1.8 seconds)
   };
 
   const handleManualShake = async () => {

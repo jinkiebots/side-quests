@@ -125,7 +125,7 @@ export default function StickerClubWall() {
     const y = e.clientY - rect.top;
     
     ctx.lineTo(x, y);
-    ctx.strokeStyle = '#00ff41';
+    ctx.strokeStyle = '#000';
     ctx.lineWidth = 2;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
@@ -162,9 +162,9 @@ export default function StickerClubWall() {
         // Set canvas defaults
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
-        ctx.strokeStyle = '#00ff41';
+        ctx.strokeStyle = '#000';
         ctx.lineWidth = 2;
-        ctx.fillStyle = '#000';
+        ctx.fillStyle = '#fff';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
     }

@@ -7,8 +7,11 @@ import styles from './styles.module.css';
 
 // Helper for image paths
 const getImagePath = (path: string) => {
-  // Encode spaces in path
-  const encodedPath = path.replace(/ /g, '%20');
+  // Properly encode the path for URLs
+  const parts = path.split('/');
+  const encodedParts = parts.map(part => encodeURIComponent(part));
+  const encodedPath = encodedParts.join('/');
+  
   if (typeof window !== 'undefined' && window.location.pathname.startsWith('/ghibli-recipes')) {
     return `/ghibli-recipes${encodedPath}`;
   }
@@ -55,8 +58,8 @@ export default function StickerClubWall() {
   // Load sticky notes from Supabase on mount
   useEffect(() => {
     const fetchStickyNotes = async () => {
-      // Wait a bit for container to be rendered
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Wait for container to be rendered
+      await new Promise(resolve => setTimeout(resolve, 200));
       
       try {
         const { data, error } = await supabase
@@ -73,22 +76,27 @@ export default function StickerClubWall() {
             console.warn('The sticky_notes table does not exist in Supabase. Please create it using the SQL in SUPABASE_SETUP.md');
           }
         } else if (data) {
+          // Get container bounds
+          const container = notesContainerRef.current;
+          const containerRect = container?.getBoundingClientRect();
+          const isMobile = typeof window !== 'undefined' && window.innerWidth <= 480;
+          const noteWidth = isMobile ? 140 : 250;
+          const noteHeight = isMobile ? 100 : 200;
+          const headerHeight = isMobile ? 120 : 200;
+          
           // Transform Supabase data to StickyNote format and clamp positions
-          const notes: StickyNote[] = data.map((note: any) => {
-            // Get container bounds to clamp positions
-            const container = notesContainerRef.current;
+          const notes: StickyNote[] = data.map((note: any, index: number) => {
             let clampedX = note.position_x || 0;
             let clampedY = note.position_y || 0;
             
-            if (container) {
-              const containerRect = container.getBoundingClientRect();
-              const isMobile = window.innerWidth <= 480;
-              const noteWidth = isMobile ? 140 : 250;
-              const noteHeight = isMobile ? 100 : 200;
-              
-              // Clamp to container bounds
-              clampedX = Math.max(0, Math.min(clampedX, containerRect.width - noteWidth));
-              clampedY = Math.max(0, Math.min(clampedY, containerRect.height - noteHeight));
+            // If container is available, clamp positions
+            if (containerRect && containerRect.width > 0 && containerRect.height > 0) {
+              clampedX = Math.max(10, Math.min(clampedX, containerRect.width - noteWidth - 10));
+              clampedY = Math.max(headerHeight, Math.min(clampedY, containerRect.height - noteHeight - 10));
+            } else {
+              // Fallback: use default positions if container not ready
+              clampedX = 10 + (index % 3) * (noteWidth + 20);
+              clampedY = headerHeight + Math.floor(index / 3) * (noteHeight + 20);
             }
             
             return {
@@ -105,6 +113,7 @@ export default function StickerClubWall() {
               createdAt: new Date(note.created_at).getTime(),
             };
           });
+          
           setStickyNotes(notes);
           stickyNotesRef.current = notes;
           
@@ -438,7 +447,7 @@ export default function StickerClubWall() {
       <div 
         className={styles.bulletinBoard}
         style={{
-          backgroundImage: `url(${getImagePath('/images/sticky mail/bulletin.jpg')})`
+          backgroundImage: `url("${getImagePath('/images/sticky mail/bulletin.jpg')}")`
         }}
       >
         {/* Header */}
@@ -465,9 +474,9 @@ Create Sticky Note
               key={note.id}
               className={`${styles.stickyNote} ${draggingNote === note.id ? styles.dragging : ''}`}
               style={{
-                left: `${note.position.x}px`,
-                top: `${note.position.y}px`,
-                backgroundImage: `url(${stickyImage})`,
+                left: `${Math.max(0, note.position.x)}px`,
+                top: `${Math.max(0, note.position.y)}px`,
+                backgroundImage: `url("${stickyImage}")`,
                 transform: `rotate(${note.rotation}deg)`,
               }}
               onMouseDown={(e) => handleNoteMouseDown(e, note.id)}

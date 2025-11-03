@@ -453,7 +453,7 @@ export default function StickerClubWall() {
   }, [draggingNote]);
 
   // Get bulletin board image path
-  const bulletinImagePath = getImagePath('/images/sticky mail/bulletin.jpg');
+  const bulletinImagePath = getImagePath('/images/sticky mail/Bulletin (1).svg');
   
   return (
     <div className={styles.container}>
@@ -479,8 +479,12 @@ Create Sticky Note
         <div ref={notesContainerRef} className={styles.notesContainer}>
           {stickyNotes.map((note) => {
             // Consistently assign sticky image based on note ID (for persistence)
-            const stickyImageNum = parseInt(note.id.slice(-1)) % 2 === 0 ? '2' : '1';
-            const stickyImage = getImagePath(`/images/sticky mail/sticky${stickyImageNum}.jpg`);
+            // Use Sticky Note.svg or Sticky Icon.svg
+            const useIcon = parseInt(note.id.slice(-1)) % 2 === 0;
+            const stickyImage = getImagePath(useIcon 
+              ? '/images/sticky mail/Sticky Icon.svg'
+              : '/images/sticky mail/Sticky Note.svg'
+            );
             
             return (
             <div

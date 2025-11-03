@@ -42,7 +42,7 @@ export default function StickerClubWall() {
   const notesContainerRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [draggingNote, setDraggingNote] = useState<string | null>(null);
-  const dragStartPosRef = useRef<{ x: number; y: number; noteX: number; noteY: number } | null>(null);
+  const dragStartPosRef = useRef<{ x: number; y: number; noteX: number; noteY: number; offsetX: number; offsetY: number } | null>(null);
   const stickyNotesRef = useRef<StickyNote[]>([]);
 
   // Keep stickyNotesRef in sync with stickyNotes state
@@ -271,6 +271,12 @@ export default function StickerClubWall() {
 
   // Handle dragging sticky notes
   const handleNoteMouseDown = (e: React.MouseEvent, noteId: string) => {
+    // Don't start drag if clicking on interactive elements
+    const target = e.target as HTMLElement;
+    if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'BUTTON') {
+      return;
+    }
+
     e.preventDefault();
     e.stopPropagation();
     
@@ -278,18 +284,20 @@ export default function StickerClubWall() {
     if (!note || !notesContainerRef.current) return;
 
     const containerRect = notesContainerRef.current.getBoundingClientRect();
-    const mouseX = e.clientX;
-    const mouseY = e.clientY;
+    const noteElement = e.currentTarget as HTMLElement;
+    const noteRect = noteElement.getBoundingClientRect();
     
-    // Calculate offset from mouse to note's current position
-    const offsetX = mouseX - containerRect.left - note.position.x;
-    const offsetY = mouseY - containerRect.top - note.position.y;
+    // Calculate offset from mouse to note's top-left corner
+    const offsetX = e.clientX - noteRect.left;
+    const offsetY = e.clientY - noteRect.top;
 
     dragStartPosRef.current = {
-      x: mouseX,
-      y: mouseY,
+      x: e.clientX,
+      y: e.clientY,
       noteX: note.position.x,
       noteY: note.position.y,
+      offsetX: offsetX,
+      offsetY: offsetY,
     };
 
     setDraggingNote(noteId);
@@ -303,16 +311,19 @@ export default function StickerClubWall() {
       if (!dragStartPosRef.current || !notesContainerRef.current) return;
 
       const containerRect = notesContainerRef.current.getBoundingClientRect();
-      const deltaX = e.clientX - dragStartPosRef.current.x;
-      const deltaY = e.clientY - dragStartPosRef.current.y;
+      
+      // Calculate new position based on mouse position minus the offset
+      const newX = e.clientX - containerRect.left - dragStartPosRef.current.offsetX;
+      const newY = e.clientY - containerRect.top - dragStartPosRef.current.offsetY;
 
-      const newX = dragStartPosRef.current.noteX + deltaX;
-      const newY = dragStartPosRef.current.noteY + deltaY;
+      // Constrain to container bounds
+      const constrainedX = Math.max(0, Math.min(newX, containerRect.width - 250));
+      const constrainedY = Math.max(0, Math.min(newY, containerRect.height - 200));
 
       setStickyNotes(prev => 
         prev.map(note => 
           note.id === draggingNote
-            ? { ...note, position: { x: Math.max(0, newX), y: Math.max(0, newY) } }
+            ? { ...note, position: { x: constrainedX, y: constrainedY } }
             : note
         )
       );

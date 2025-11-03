@@ -185,15 +185,25 @@ export default function StickerClubWall() {
       return; // Don't post empty notes
     }
 
-    // Calculate positions that fit on screen, especially for mobile
+    // Calculate positions that fit within the bulletin board container
     const isMobile = window.innerWidth <= 480;
     const noteWidth = isMobile ? 140 : 250;
     const noteHeight = isMobile ? 100 : 200;
     const headerHeight = isMobile ? 120 : 200;
-    const maxX = window.innerWidth - noteWidth - 20;
-    const maxY = window.innerHeight - noteHeight - 20;
+    
+    // Get container bounds
+    const container = notesContainerRef.current;
+    if (!container) return;
+    
+    const containerRect = container.getBoundingClientRect();
+    const containerWidth = containerRect.width;
+    const containerHeight = containerRect.height;
+    
+    // Calculate valid position within bulletin board bounds
+    const maxX = containerWidth - noteWidth - 20;
+    const maxY = containerHeight - noteHeight - 20;
     const minX = 10;
-    const minY = headerHeight;
+    const minY = Math.max(0, headerHeight - containerRect.top);
     
     const positionX = Math.random() * (maxX - minX) + minX;
     const positionY = Math.random() * (maxY - minY) + minY;
@@ -316,9 +326,14 @@ export default function StickerClubWall() {
       const newX = e.clientX - containerRect.left - dragStartPosRef.current.offsetX;
       const newY = e.clientY - containerRect.top - dragStartPosRef.current.offsetY;
 
-      // Constrain to container bounds
-      const constrainedX = Math.max(0, Math.min(newX, containerRect.width - 250));
-      const constrainedY = Math.max(0, Math.min(newY, containerRect.height - 200));
+      // Get note dimensions
+      const isMobile = window.innerWidth <= 480;
+      const noteWidth = isMobile ? 140 : 250;
+      const noteHeight = isMobile ? 100 : 200;
+
+      // Constrain to container bounds (keep within bulletin board)
+      const constrainedX = Math.max(0, Math.min(newX, containerRect.width - noteWidth));
+      const constrainedY = Math.max(0, Math.min(newY, containerRect.height - noteHeight));
 
       setStickyNotes(prev => 
         prev.map(note => 

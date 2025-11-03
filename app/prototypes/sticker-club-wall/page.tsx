@@ -52,6 +52,12 @@ export default function StickerClubWall() {
 
         if (error) {
           console.error('Error fetching sticky notes:', error);
+          console.error('Error details:', JSON.stringify(error, null, 2));
+          
+          // If table doesn't exist, show helpful message
+          if (error.code === 'PGRST116' || error.message?.includes('relation') || error.message?.includes('does not exist')) {
+            console.warn('The sticky_notes table does not exist in Supabase. Please create it using the SQL in SUPABASE_SETUP.md');
+          }
         } else if (data) {
           // Transform Supabase data to StickyNote format
           const notes: StickyNote[] = data.map((note: any) => ({
@@ -188,7 +194,19 @@ export default function StickerClubWall() {
 
     if (error) {
       console.error('Error posting sticky note:', error);
-      alert('Failed to post sticky note. Please try again.');
+      console.error('Error details:', JSON.stringify(error, null, 2));
+      
+      // More specific error messages
+      let errorMessage = 'Failed to post sticky note. ';
+      if (error.code === 'PGRST116' || error.message?.includes('relation') || error.message?.includes('does not exist')) {
+        errorMessage += 'The database table may not exist yet. Please create the "sticky_notes" table in Supabase.';
+      } else if (error.message) {
+        errorMessage += `Error: ${error.message}`;
+      } else {
+        errorMessage += 'Please try again.';
+      }
+      
+      alert(errorMessage);
       return;
     }
 

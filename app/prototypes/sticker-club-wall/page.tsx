@@ -278,13 +278,17 @@ export default function StickerClubWall() {
   const handleNoteMouseMove = (e: MouseEvent) => {
     if (!draggingNote) return;
 
-    const newX = e.clientX - dragOffset.x;
-    const newY = e.clientY - dragOffset.y;
+    const notesContainer = document.querySelector(`.${styles.notesContainer}`);
+    if (!notesContainer) return;
+
+    const containerRect = notesContainer.getBoundingClientRect();
+    const newX = e.clientX - containerRect.left - dragOffset.x;
+    const newY = e.clientY - containerRect.top - dragOffset.y;
 
     setStickyNotes(prev => 
       prev.map(note => 
         note.id === draggingNote
-          ? { ...note, position: { x: newX, y: newY } }
+          ? { ...note, position: { x: Math.max(0, newX), y: Math.max(0, newY) } }
           : note
       )
     );
@@ -315,14 +319,17 @@ export default function StickerClubWall() {
 
   useEffect(() => {
     if (draggingNote) {
-      window.addEventListener('mousemove', handleNoteMouseMove);
-      window.addEventListener('mouseup', handleNoteMouseUp);
+      const handleMove = (e: MouseEvent) => handleNoteMouseMove(e);
+      const handleUp = () => handleNoteMouseUp();
+      
+      window.addEventListener('mousemove', handleMove);
+      window.addEventListener('mouseup', handleUp);
       return () => {
-        window.removeEventListener('mousemove', handleNoteMouseMove);
-        window.removeEventListener('mouseup', handleNoteMouseUp);
+        window.removeEventListener('mousemove', handleMove);
+        window.removeEventListener('mouseup', handleUp);
       };
     }
-  }, [draggingNote, dragOffset, stickyNotes]);
+  }, [draggingNote, dragOffset]);
 
   return (
     <div className={styles.container}>

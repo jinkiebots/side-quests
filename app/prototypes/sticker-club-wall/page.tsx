@@ -7,10 +7,12 @@ import styles from './styles.module.css';
 
 // Helper for image paths
 const getImagePath = (path: string) => {
+  // Encode spaces in path
+  const encodedPath = path.replace(/ /g, '%20');
   if (typeof window !== 'undefined' && window.location.pathname.startsWith('/ghibli-recipes')) {
-    return `/ghibli-recipes${path}`;
+    return `/ghibli-recipes${encodedPath}`;
   }
-  return path;
+  return encodedPath;
 };
 
 interface StickyNote {

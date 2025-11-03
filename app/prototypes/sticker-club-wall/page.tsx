@@ -398,14 +398,19 @@ Create Sticky Note
 
         {/* Sticky Notes Display */}
         <div ref={notesContainerRef} className={styles.notesContainer}>
-          {stickyNotes.map((note) => (
+          {stickyNotes.map((note) => {
+            // Consistently assign sticky image based on note ID (for persistence)
+            const stickyImageNum = parseInt(note.id.slice(-1)) % 2 === 0 ? '2' : '1';
+            const stickyImage = getImagePath(`/images/sticky mail/sticky${stickyImageNum}.jpg`);
+            
+            return (
             <div
               key={note.id}
               className={`${styles.stickyNote} ${draggingNote === note.id ? styles.dragging : ''}`}
               style={{
                 left: `${note.position.x}px`,
                 top: `${note.position.y}px`,
-                backgroundColor: note.color,
+                backgroundImage: `url(${stickyImage})`,
                 transform: `rotate(${note.rotation}deg)`,
               }}
               onMouseDown={(e) => handleNoteMouseDown(e, note.id)}
@@ -432,7 +437,8 @@ Create Sticky Note
                 )}
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Loading State */}

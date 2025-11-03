@@ -378,7 +378,12 @@ export default function StickerClubWall() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.bulletinBoard}>
+      <div 
+        className={styles.bulletinBoard}
+        style={{
+          backgroundImage: `url(${getImagePath('/images/sticky mail/bulletin.jpg')})`
+        }}
+      >
         {/* Header */}
         <header className={styles.header}>
           <h1 className={styles.title}>Sticker Club Wall</h1>

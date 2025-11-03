@@ -80,10 +80,7 @@
   min-height: 300px;
   padding: 2rem;
   padding-top: 3rem;
-  background-color: transparent;
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
+  background: transparent;
   border: none;
   cursor: move;
   transition: transform 0.1s ease;
@@ -93,6 +90,17 @@
   touch-action: none;
   pointer-events: auto;
   box-sizing: border-box;
+}
+
+.stickyNoteBackground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 0;
+  pointer-events: none;
 }
 
 .stickyNote:hover {
@@ -118,7 +126,7 @@
   transform: translateX(-50%);
   width: 40px;
   height: 40px;
-  z-index: 2;
+  z-index: 3;
   pointer-events: none;
 }
 
@@ -138,6 +146,8 @@
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  position: relative;
+  z-index: 1;
 }
 
 .noteText {

@@ -493,11 +493,17 @@ Create Sticky Note
               style={{
                 left: `${Math.max(0, note.position.x)}px`,
                 top: `${Math.max(0, note.position.y)}px`,
-                backgroundImage: `url("${stickyImage}")`,
                 transform: `rotate(${note.rotation}deg)`,
               }}
               onMouseDown={(e) => handleNoteMouseDown(e, note.id)}
             >
+              {/* Sticky Note SVG Background */}
+              <img 
+                src={stickyImage}
+                alt="Sticky Note"
+                className={styles.stickyNoteBackground}
+              />
+              
               {/* Pin at top middle */}
               <div className={styles.pin}>
                 <img 

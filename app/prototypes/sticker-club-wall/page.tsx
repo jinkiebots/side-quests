@@ -121,14 +121,20 @@ export default function StickerClubWall() {
           notes.forEach((note, index) => {
             const original = data[index];
             if (original.position_x !== note.position.x || original.position_y !== note.position.y) {
-              supabase
-                .from('sticky_notes')
-                .update({
-                  position_x: note.position.x,
-                  position_y: note.position.y,
-                })
-                .eq('id', note.id)
-                .catch(err => console.error('Error updating clamped position:', err));
+              // Fire and forget - update positions asynchronously
+              (async () => {
+                try {
+                  await supabase
+                    .from('sticky_notes')
+                    .update({
+                      position_x: note.position.x,
+                      position_y: note.position.y,
+                    })
+                    .eq('id', note.id);
+                } catch (err) {
+                  console.error('Error updating clamped position:', err);
+                }
+              })();
             }
           });
         }

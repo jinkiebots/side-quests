@@ -10,6 +10,7 @@
     "export": "next build"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.78.0",
     "@types/p5": "^1.7.6",
     "@types/three": "^0.180.0",
     "gsap": "^3.13.0",

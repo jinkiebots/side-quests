@@ -60,7 +60,8 @@ export default function Home() {
         id: 'mail',
         src: '/images/home/mail.png',
         alt: 'Mail',
-        position: mailPos
+        position: mailPos,
+        navigateTo: '/prototypes/sticker-club-wall'
       },
       {
         id: 'ipod',
@@ -205,7 +206,8 @@ export default function Home() {
             id: 'mail',
             src: getImagePath('/images/home/mail.png'),
             alt: 'Mail',
-            position: { x: centerX + spacingX * 0.7 - mailSize / 2, y: centerY - spacingY * 0.7 - mailSize / 2 }
+            position: { x: centerX + spacingX * 0.7 - mailSize / 2, y: centerY - spacingY * 0.7 - mailSize / 2 },
+            navigateTo: '/prototypes/sticker-club-wall'
           },
           {
             id: 'ipod',

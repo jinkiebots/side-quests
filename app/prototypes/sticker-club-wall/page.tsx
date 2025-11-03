@@ -39,9 +39,16 @@ export default function StickerClubWall() {
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const notesContainerRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [draggingNote, setDraggingNote] = useState<string | null>(null);
-  const [dragOffset, setDragOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const dragStartPosRef = useRef<{ x: number; y: number; noteX: number; noteY: number } | null>(null);
+  const stickyNotesRef = useRef<StickyNote[]>([]);
+
+  // Keep stickyNotesRef in sync with stickyNotes state
+  useEffect(() => {
+    stickyNotesRef.current = stickyNotes;
+  }, [stickyNotes]);
 
   // Load sticky notes from Supabase on mount
   useEffect(() => {
@@ -76,6 +83,7 @@ export default function StickerClubWall() {
             createdAt: new Date(note.created_at).getTime(),
           }));
           setStickyNotes(notes);
+          stickyNotesRef.current = notes;
         }
       } catch (error) {
         console.error('Error loading sticky notes:', error);
@@ -264,72 +272,83 @@ export default function StickerClubWall() {
   // Handle dragging sticky notes
   const handleNoteMouseDown = (e: React.MouseEvent, noteId: string) => {
     e.preventDefault();
-    const note = stickyNotes.find(n => n.id === noteId);
-    if (!note) return;
+    e.stopPropagation();
+    
+    const note = stickyNotesRef.current.find(n => n.id === noteId);
+    if (!note || !notesContainerRef.current) return;
 
-    const rect = e.currentTarget.getBoundingClientRect();
-    const offsetX = e.clientX - rect.left;
-    const offsetY = e.clientY - rect.top;
+    const containerRect = notesContainerRef.current.getBoundingClientRect();
+    const mouseX = e.clientX;
+    const mouseY = e.clientY;
+    
+    // Calculate offset from mouse to note's current position
+    const offsetX = mouseX - containerRect.left - note.position.x;
+    const offsetY = mouseY - containerRect.top - note.position.y;
+
+    dragStartPosRef.current = {
+      x: mouseX,
+      y: mouseY,
+      noteX: note.position.x,
+      noteY: note.position.y,
+    };
 
     setDraggingNote(noteId);
-    setDragOffset({ x: offsetX, y: offsetY });
-  };
-
-  const handleNoteMouseMove = (e: MouseEvent) => {
-    if (!draggingNote) return;
-
-    const notesContainer = document.querySelector(`.${styles.notesContainer}`);
-    if (!notesContainer) return;
-
-    const containerRect = notesContainer.getBoundingClientRect();
-    const newX = e.clientX - containerRect.left - dragOffset.x;
-    const newY = e.clientY - containerRect.top - dragOffset.y;
-
-    setStickyNotes(prev => 
-      prev.map(note => 
-        note.id === draggingNote
-          ? { ...note, position: { x: Math.max(0, newX), y: Math.max(0, newY) } }
-          : note
-      )
-    );
-  };
-
-  const handleNoteMouseUp = async () => {
-    if (!draggingNote) return;
-
-    // Save new position to Supabase
-    const note = stickyNotes.find(n => n.id === draggingNote);
-    if (note) {
-      try {
-        await supabase
-          .from('sticky_notes')
-          .update({
-            position_x: note.position.x,
-            position_y: note.position.y,
-          })
-          .eq('id', note.id);
-      } catch (error) {
-        console.error('Error updating note position:', error);
-      }
-    }
-
-    setDraggingNote(null);
-    setDragOffset({ x: 0, y: 0 });
   };
 
   useEffect(() => {
-    if (draggingNote) {
-      const handleMove = (e: MouseEvent) => handleNoteMouseMove(e);
-      const handleUp = () => handleNoteMouseUp();
-      
-      window.addEventListener('mousemove', handleMove);
-      window.addEventListener('mouseup', handleUp);
-      return () => {
-        window.removeEventListener('mousemove', handleMove);
-        window.removeEventListener('mouseup', handleUp);
-      };
-    }
-  }, [draggingNote, dragOffset]);
+    if (!draggingNote || !dragStartPosRef.current || !notesContainerRef.current) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      e.preventDefault();
+      if (!dragStartPosRef.current || !notesContainerRef.current) return;
+
+      const containerRect = notesContainerRef.current.getBoundingClientRect();
+      const deltaX = e.clientX - dragStartPosRef.current.x;
+      const deltaY = e.clientY - dragStartPosRef.current.y;
+
+      const newX = dragStartPosRef.current.noteX + deltaX;
+      const newY = dragStartPosRef.current.noteY + deltaY;
+
+      setStickyNotes(prev => 
+        prev.map(note => 
+          note.id === draggingNote
+            ? { ...note, position: { x: Math.max(0, newX), y: Math.max(0, newY) } }
+            : note
+        )
+      );
+    };
+
+    const handleMouseUp = async () => {
+      if (!draggingNote) return;
+
+      // Save new position to Supabase
+      const note = stickyNotesRef.current.find(n => n.id === draggingNote);
+      if (note) {
+        try {
+          await supabase
+            .from('sticky_notes')
+            .update({
+              position_x: note.position.x,
+              position_y: note.position.y,
+            })
+            .eq('id', note.id);
+        } catch (error) {
+          console.error('Error updating note position:', error);
+        }
+      }
+
+      setDraggingNote(null);
+      dragStartPosRef.current = null;
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [draggingNote]);
 
   return (
     <div className={styles.container}>
@@ -347,7 +366,7 @@ Create Sticky Note
         </header>
 
         {/* Sticky Notes Display */}
-        <div className={styles.notesContainer}>
+        <div ref={notesContainerRef} className={styles.notesContainer}>
           {stickyNotes.map((note) => (
             <div
               key={note.id}

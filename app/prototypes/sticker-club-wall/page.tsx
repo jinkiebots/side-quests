@@ -40,6 +40,8 @@ export default function StickerClubWall() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [draggingNote, setDraggingNote] = useState<string | null>(null);
+  const [dragOffset, setDragOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
   // Load sticky notes from Supabase on mount
   useEffect(() => {
@@ -259,6 +261,69 @@ export default function StickerClubWall() {
     setActiveMode('text');
   };
 
+  // Handle dragging sticky notes
+  const handleNoteMouseDown = (e: React.MouseEvent, noteId: string) => {
+    e.preventDefault();
+    const note = stickyNotes.find(n => n.id === noteId);
+    if (!note) return;
+
+    const rect = e.currentTarget.getBoundingClientRect();
+    const offsetX = e.clientX - rect.left;
+    const offsetY = e.clientY - rect.top;
+
+    setDraggingNote(noteId);
+    setDragOffset({ x: offsetX, y: offsetY });
+  };
+
+  const handleNoteMouseMove = (e: MouseEvent) => {
+    if (!draggingNote) return;
+
+    const newX = e.clientX - dragOffset.x;
+    const newY = e.clientY - dragOffset.y;
+
+    setStickyNotes(prev => 
+      prev.map(note => 
+        note.id === draggingNote
+          ? { ...note, position: { x: newX, y: newY } }
+          : note
+      )
+    );
+  };
+
+  const handleNoteMouseUp = async () => {
+    if (!draggingNote) return;
+
+    // Save new position to Supabase
+    const note = stickyNotes.find(n => n.id === draggingNote);
+    if (note) {
+      try {
+        await supabase
+          .from('sticky_notes')
+          .update({
+            position_x: note.position.x,
+            position_y: note.position.y,
+          })
+          .eq('id', note.id);
+      } catch (error) {
+        console.error('Error updating note position:', error);
+      }
+    }
+
+    setDraggingNote(null);
+    setDragOffset({ x: 0, y: 0 });
+  };
+
+  useEffect(() => {
+    if (draggingNote) {
+      window.addEventListener('mousemove', handleNoteMouseMove);
+      window.addEventListener('mouseup', handleNoteMouseUp);
+      return () => {
+        window.removeEventListener('mousemove', handleNoteMouseMove);
+        window.removeEventListener('mouseup', handleNoteMouseUp);
+      };
+    }
+  }, [draggingNote, dragOffset, stickyNotes]);
+
   return (
     <div className={styles.container}>
       <div className={styles.bulletinBoard}>
@@ -270,7 +335,7 @@ export default function StickerClubWall() {
             className={styles.createButton}
             onClick={() => setShowCreateModal(true)}
           >
-            ✨ Create Sticky Note
+Create Sticky Note
           </button>
         </header>
 
@@ -279,13 +344,14 @@ export default function StickerClubWall() {
           {stickyNotes.map((note) => (
             <div
               key={note.id}
-              className={styles.stickyNote}
+              className={`${styles.stickyNote} ${draggingNote === note.id ? styles.dragging : ''}`}
               style={{
                 left: `${note.position.x}px`,
                 top: `${note.position.y}px`,
                 backgroundColor: note.color,
                 transform: `rotate(${note.rotation}deg)`,
               }}
+              onMouseDown={(e) => handleNoteMouseDown(e, note.id)}
             >
               {/* Pin at top middle */}
               <div className={styles.pin}>

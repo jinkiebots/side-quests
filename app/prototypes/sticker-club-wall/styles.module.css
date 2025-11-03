@@ -10,22 +10,9 @@
 
 .bulletinBoard {
   min-height: 100vh;
-  background: 
-    /* White paper background */
-    #ffffff,
-    /* Hand-drawn texture */
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0, 0, 0, 0.02) 2px,
-      rgba(0, 0, 0, 0.02) 3px
-    );
-  background-size: 100%, 100% 8px;
+  background: #ffffff;
   padding: 1rem;
   position: relative;
-  border: 3px solid #000;
-  box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.05);
 }
 
 .bulletinBoard::before {
@@ -52,22 +39,10 @@
   font-size: 2.5rem;
   color: #000;
   margin: 0 0 0.5rem 0;
-  letter-spacing: 3px;
-  font-weight: bold;
-  text-transform: uppercase;
-  text-shadow: none;
-  position: relative;
-}
-
-.title::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: #000;
-  transform: skew(-2deg);
+  letter-spacing: 2px;
+  font-weight: normal;
+  text-transform: none;
+  font-family: 'Courier New', 'Monaco', 'Consolas', 'Lucida Console', monospace;
 }
 
 .subtitle {
@@ -81,27 +56,20 @@
 .createButton {
   background: #fff;
   color: #000;
-  border: 3px solid #000;
+  border: 2px solid #000;
   padding: 0.8rem 2rem;
   font-size: 0.9rem;
   font-family: 'Courier New', 'Monaco', 'Consolas', 'Lucida Console', monospace;
   cursor: pointer;
-  box-shadow: 
-    4px 4px 0px #000,
-    0 0 0 1px #000;
   transition: all 0.1s ease;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  font-weight: bold;
-  position: relative;
-  transform: rotate(-0.5deg);
+  text-transform: none;
+  letter-spacing: 1px;
+  font-weight: normal;
 }
 
 .createButton:hover {
-  transform: rotate(0.5deg) translate(-2px, -2px);
-  box-shadow: 
-    6px 6px 0px #000,
-    0 0 0 1px #000;
+  background: #000;
+  color: #fff;
 }
 
 .createButton:active {
@@ -121,21 +89,24 @@
   padding: 1.5rem;
   padding-top: 2.5rem;
   background: #fff;
-  border: 3px solid #000;
-  box-shadow: 
-    4px 4px 0px rgba(0, 0, 0, 0.3),
-    0 0 0 1px #000;
+  border: none;
   cursor: move;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  transition: transform 0.1s ease;
   position: relative;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
 }
 
 .stickyNote:hover {
   transform: rotate(1deg) scale(1.02);
-  box-shadow: 
-    6px 6px 0px rgba(0, 0, 0, 0.4),
-    0 0 0 1px #000;
   z-index: 10;
+}
+
+.stickyNote.dragging {
+  z-index: 100;
+  cursor: grabbing;
+  opacity: 0.9;
 }
 
 .pin {
@@ -211,16 +182,12 @@
 
 .modal {
   background: #fff;
-  border: 4px solid #000;
+  border: 2px solid #000;
   width: 100%;
   max-width: 600px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 
-    8px 8px 0px #000,
-    0 0 0 2px #000;
   position: relative;
-  transform: rotate(-0.3deg);
 }
 
 .modalHeader {
@@ -228,7 +195,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem;
-  border-bottom: 3px solid #000;
+  border-bottom: 2px solid #000;
   background: #fff;
 }
 
@@ -237,14 +204,14 @@
   font-size: 1.2rem;
   color: #000;
   font-family: 'Courier New', 'Monaco', 'Consolas', 'Lucida Console', monospace;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  font-weight: bold;
+  text-transform: none;
+  letter-spacing: 1px;
+  font-weight: normal;
 }
 
 .closeButton {
   background: #fff;
-  border: 3px solid #000;
+  border: 2px solid #000;
   color: #000;
   font-size: 1.5rem;
   cursor: pointer;
@@ -255,13 +222,12 @@
   justify-content: center;
   transition: all 0.1s ease;
   font-family: 'Courier New', 'Monaco', 'Consolas', 'Lucida Console', monospace;
-  font-weight: bold;
-  box-shadow: 2px 2px 0px #000;
+  font-weight: normal;
 }
 
 .closeButton:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 4px 4px 0px #000;
+  background: #000;
+  color: #fff;
 }
 
 .modalContent {
@@ -280,33 +246,25 @@
   min-width: 120px;
   padding: 0.8rem 1rem;
   background: #fff;
-  border: 3px solid #000;
+  border: 2px solid #000;
   color: #000;
   cursor: pointer;
   font-family: 'Courier New', 'Monaco', 'Consolas', 'Lucida Console', monospace;
   font-size: 0.85rem;
   transition: all 0.1s ease;
-  text-transform: uppercase;
+  text-transform: none;
   letter-spacing: 1px;
-  font-weight: bold;
-  box-shadow: 2px 2px 0px #000;
-  transform: rotate(0.5deg);
-}
-
-.modeButton:nth-child(even) {
-  transform: rotate(-0.5deg);
+  font-weight: normal;
 }
 
 .modeButton:hover {
-  transform: rotate(0deg) translate(-1px, -1px);
-  box-shadow: 3px 3px 0px #000;
+  background: #000;
+  color: #fff;
 }
 
 .modeButton.active {
   background: #000;
   color: #fff;
-  box-shadow: 4px 4px 0px #000;
-  transform: rotate(0deg);
 }
 
 .colorPicker {
@@ -319,9 +277,9 @@
   font-size: 0.9rem;
   color: #000;
   font-family: 'Courier New', 'Monaco', 'Consolas', 'Lucida Console', monospace;
-  text-transform: uppercase;
+  text-transform: none;
   letter-spacing: 1px;
-  font-weight: bold;
+  font-weight: normal;
 }
 
 .colorOptions {
@@ -352,34 +310,31 @@
 .textInput {
   width: 100%;
   padding: 1rem;
-  border: 3px solid #000;
+  border: 2px solid #000;
   font-family: 'Courier New', 'Monaco', 'Consolas', 'Lucida Console', monospace;
   font-size: 0.85rem;
   resize: vertical;
   background: #fff;
   color: #000;
-  box-shadow: inset 2px 2px 0px rgba(0, 0, 0, 0.1);
 }
 
 .uploadButton {
   padding: 0.8rem 2rem;
   background: #fff;
   color: #000;
-  border: 3px solid #000;
+  border: 2px solid #000;
   cursor: pointer;
   font-family: 'Courier New', 'Monaco', 'Consolas', 'Lucida Console', monospace;
   font-size: 0.85rem;
   transition: all 0.1s ease;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  font-weight: bold;
-  box-shadow: 2px 2px 0px #000;
-  transform: rotate(-0.3deg);
+  text-transform: none;
+  letter-spacing: 1px;
+  font-weight: normal;
 }
 
 .uploadButton:hover {
-  transform: rotate(0.3deg) translate(-1px, -1px);
-  box-shadow: 3px 3px 0px #000;
+  background: #000;
+  color: #fff;
 }
 
 .imagePreview {
@@ -399,32 +354,30 @@
   padding: 0.5rem 1rem;
   background: #fff;
   color: #000;
-  border: 3px solid #000;
+  border: 2px solid #000;
   cursor: pointer;
   font-family: 'Courier New', 'Monaco', 'Consolas', 'Lucida Console', monospace;
   font-size: 0.8rem;
-  text-transform: uppercase;
+  text-transform: none;
   letter-spacing: 1px;
-  font-weight: bold;
+  font-weight: normal;
   transition: all 0.1s ease;
-  box-shadow: 2px 2px 0px #000;
 }
 
 .removeButton:hover {
-  transform: translate(-1px, -1px);
-  box-shadow: 3px 3px 0px #000;
+  background: #000;
+  color: #fff;
 }
 
 .doodleCanvas {
   width: 100%;
   max-width: 400px;
   height: 300px;
-  border: 3px solid #000;
+  border: 2px solid #000;
   cursor: crosshair;
   background: #fff;
   display: block;
   margin: 0 auto;
-  box-shadow: inset 2px 2px 0px rgba(0, 0, 0, 0.1);
 }
 
 .clearButton {
@@ -433,20 +386,19 @@
   padding: 0.5rem 1rem;
   background: #fff;
   color: #000;
-  border: 3px solid #000;
+  border: 2px solid #000;
   cursor: pointer;
   font-family: 'Courier New', 'Monaco', 'Consolas', 'Lucida Console', monospace;
   font-size: 0.8rem;
-  text-transform: uppercase;
+  text-transform: none;
   letter-spacing: 1px;
-  font-weight: bold;
+  font-weight: normal;
   transition: all 0.1s ease;
-  box-shadow: 2px 2px 0px #000;
 }
 
 .clearButton:hover {
-  transform: translate(-1px, -1px);
-  box-shadow: 3px 3px 0px #000;
+  background: #000;
+  color: #fff;
 }
 
 .additionalText {
@@ -459,9 +411,9 @@
   font-size: 0.9rem;
   color: #000;
   font-family: 'Courier New', 'Monaco', 'Consolas', 'Lucida Console', monospace;
-  text-transform: uppercase;
+  text-transform: none;
   letter-spacing: 1px;
-  font-weight: bold;
+  font-weight: normal;
 }
 
 .modalFooter {
@@ -469,7 +421,7 @@
   justify-content: flex-end;
   gap: 1rem;
   padding: 1.5rem;
-  border-top: 3px solid #000;
+  border-top: 2px solid #000;
   background: #fff;
 }
 
@@ -480,35 +432,30 @@
   font-family: 'Courier New', 'Monaco', 'Consolas', 'Lucida Console', monospace;
   font-size: 0.85rem;
   transition: all 0.1s ease;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  font-weight: bold;
+  text-transform: none;
+  letter-spacing: 1px;
+  font-weight: normal;
 }
 
 .cancelButton {
   background: #fff;
   color: #000;
-  border: 3px solid #000;
-  box-shadow: 2px 2px 0px #000;
-  transform: rotate(-0.5deg);
+  border: 2px solid #000;
 }
 
 .cancelButton:hover {
-  transform: rotate(0deg) translate(-1px, -1px);
-  box-shadow: 3px 3px 0px #000;
+  background: #000;
+  color: #fff;
 }
 
 .postButton {
   background: #000;
   color: #fff;
-  border: 3px solid #000;
-  box-shadow: 3px 3px 0px #000;
-  transform: rotate(0.5deg);
+  border: 2px solid #000;
 }
 
 .postButton:hover:not(:disabled) {
-  transform: rotate(0deg) translate(-2px, -2px);
-  box-shadow: 5px 5px 0px #000;
+  background: #333;
 }
 
 .postButton:disabled {
@@ -517,7 +464,6 @@
   border-color: #ccc;
   background: #f5f5f5;
   color: #999;
-  box-shadow: none;
 }
 
 

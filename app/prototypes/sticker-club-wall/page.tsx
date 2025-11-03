@@ -53,6 +53,9 @@ export default function StickerClubWall() {
   // Load sticky notes from Supabase on mount
   useEffect(() => {
     const fetchStickyNotes = async () => {
+      // Wait a bit for container to be rendered
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       try {
         const { data, error } = await supabase
           .from('sticky_notes')
@@ -68,22 +71,55 @@ export default function StickerClubWall() {
             console.warn('The sticky_notes table does not exist in Supabase. Please create it using the SQL in SUPABASE_SETUP.md');
           }
         } else if (data) {
-          // Transform Supabase data to StickyNote format
-          const notes: StickyNote[] = data.map((note: any) => ({
-            id: note.id,
-            text: note.text || '',
-            image: note.image || undefined,
-            doodle: note.doodle || undefined,
-            position: {
-              x: note.position_x,
-              y: note.position_y,
-            },
-            rotation: note.rotation || 0,
-            color: note.color || STICKY_COLORS[0],
-            createdAt: new Date(note.created_at).getTime(),
-          }));
+          // Transform Supabase data to StickyNote format and clamp positions
+          const notes: StickyNote[] = data.map((note: any) => {
+            // Get container bounds to clamp positions
+            const container = notesContainerRef.current;
+            let clampedX = note.position_x || 0;
+            let clampedY = note.position_y || 0;
+            
+            if (container) {
+              const containerRect = container.getBoundingClientRect();
+              const isMobile = window.innerWidth <= 480;
+              const noteWidth = isMobile ? 140 : 250;
+              const noteHeight = isMobile ? 100 : 200;
+              
+              // Clamp to container bounds
+              clampedX = Math.max(0, Math.min(clampedX, containerRect.width - noteWidth));
+              clampedY = Math.max(0, Math.min(clampedY, containerRect.height - noteHeight));
+            }
+            
+            return {
+              id: note.id,
+              text: note.text || '',
+              image: note.image || undefined,
+              doodle: note.doodle || undefined,
+              position: {
+                x: clampedX,
+                y: clampedY,
+              },
+              rotation: note.rotation || 0,
+              color: note.color || STICKY_COLORS[0],
+              createdAt: new Date(note.created_at).getTime(),
+            };
+          });
           setStickyNotes(notes);
           stickyNotesRef.current = notes;
+          
+          // Update positions in Supabase if they were clamped
+          notes.forEach((note, index) => {
+            const original = data[index];
+            if (original.position_x !== note.position.x || original.position_y !== note.position.y) {
+              supabase
+                .from('sticky_notes')
+                .update({
+                  position_x: note.position.x,
+                  position_y: note.position.y,
+                })
+                .eq('id', note.id)
+                .catch(err => console.error('Error updating clamped position:', err));
+            }
+          });
         }
       } catch (error) {
         console.error('Error loading sticky notes:', error);
@@ -323,8 +359,8 @@ export default function StickerClubWall() {
       const containerRect = notesContainerRef.current.getBoundingClientRect();
       
       // Calculate new position based on mouse position minus the offset
-      const newX = e.clientX - containerRect.left - dragStartPosRef.current.offsetX;
-      const newY = e.clientY - containerRect.top - dragStartPosRef.current.offsetY;
+      let newX = e.clientX - containerRect.left - dragStartPosRef.current.offsetX;
+      let newY = e.clientY - containerRect.top - dragStartPosRef.current.offsetY;
 
       // Get note dimensions
       const isMobile = window.innerWidth <= 480;
@@ -332,8 +368,9 @@ export default function StickerClubWall() {
       const noteHeight = isMobile ? 100 : 200;
 
       // Constrain to container bounds (keep within bulletin board)
-      const constrainedX = Math.max(0, Math.min(newX, containerRect.width - noteWidth));
-      const constrainedY = Math.max(0, Math.min(newY, containerRect.height - noteHeight));
+      // Allow slight negative values while dragging to make it feel more natural
+      const constrainedX = Math.max(-50, Math.min(newX, containerRect.width - noteWidth + 50));
+      const constrainedY = Math.max(-50, Math.min(newY, containerRect.height - noteHeight + 50));
 
       setStickyNotes(prev => 
         prev.map(note => 
@@ -347,15 +384,33 @@ export default function StickerClubWall() {
     const handleMouseUp = async () => {
       if (!draggingNote) return;
 
-      // Save new position to Supabase
+      // Save new position to Supabase, clamping to valid bounds
       const note = stickyNotesRef.current.find(n => n.id === draggingNote);
-      if (note) {
+      if (note && notesContainerRef.current) {
+        const containerRect = notesContainerRef.current.getBoundingClientRect();
+        const isMobile = window.innerWidth <= 480;
+        const noteWidth = isMobile ? 140 : 250;
+        const noteHeight = isMobile ? 100 : 200;
+        
+        // Clamp to valid bounds before saving
+        const clampedX = Math.max(0, Math.min(note.position.x, containerRect.width - noteWidth));
+        const clampedY = Math.max(0, Math.min(note.position.y, containerRect.height - noteHeight));
+        
+        // Update state with clamped position
+        setStickyNotes(prev => 
+          prev.map(n => 
+            n.id === draggingNote
+              ? { ...n, position: { x: clampedX, y: clampedY } }
+              : n
+          )
+        );
+        
         try {
           await supabase
             .from('sticky_notes')
             .update({
-              position_x: note.position.x,
-              position_y: note.position.y,
+              position_x: clampedX,
+              position_y: clampedY,
             })
             .eq('id', note.id);
         } catch (error) {

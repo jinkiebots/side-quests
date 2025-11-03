@@ -7,9 +7,13 @@ import styles from './styles.module.css';
 
 // Helper for image paths
 const getImagePath = (path: string) => {
-  // Properly encode the path for URLs
+  // Don't encode slashes, only encode the actual path segments
   const parts = path.split('/');
-  const encodedParts = parts.map(part => encodeURIComponent(part));
+  const encodedParts = parts.map((part, index) => {
+    // Don't encode empty strings (leading/trailing slashes) or already encoded parts
+    if (!part || index === 0) return part;
+    return encodeURIComponent(part);
+  });
   const encodedPath = encodedParts.join('/');
   
   if (typeof window !== 'undefined' && window.location.pathname.startsWith('/ghibli-recipes')) {
@@ -80,8 +84,8 @@ export default function StickerClubWall() {
           const container = notesContainerRef.current;
           const containerRect = container?.getBoundingClientRect();
           const isMobile = typeof window !== 'undefined' && window.innerWidth <= 480;
-          const noteWidth = isMobile ? 140 : 250;
-          const noteHeight = isMobile ? 100 : 200;
+          const noteWidth = isMobile ? 200 : 350;
+          const noteHeight = isMobile ? 250 : 300;
           const headerHeight = isMobile ? 120 : 200;
           
           // Transform Supabase data to StickyNote format and clamp positions
@@ -240,8 +244,8 @@ export default function StickerClubWall() {
 
     // Calculate positions that fit within the bulletin board container
     const isMobile = window.innerWidth <= 480;
-    const noteWidth = isMobile ? 140 : 250;
-    const noteHeight = isMobile ? 100 : 200;
+    const noteWidth = isMobile ? 200 : 350;
+    const noteHeight = isMobile ? 250 : 300;
     const headerHeight = isMobile ? 120 : 200;
     
     // Get container bounds
@@ -381,8 +385,8 @@ export default function StickerClubWall() {
 
       // Get note dimensions
       const isMobile = window.innerWidth <= 480;
-      const noteWidth = isMobile ? 140 : 250;
-      const noteHeight = isMobile ? 100 : 200;
+      const noteWidth = isMobile ? 200 : 350;
+      const noteHeight = isMobile ? 250 : 300;
 
       // Constrain to container bounds (keep within bulletin board)
       // Allow slight negative values while dragging to make it feel more natural
@@ -406,8 +410,8 @@ export default function StickerClubWall() {
       if (note && notesContainerRef.current) {
         const containerRect = notesContainerRef.current.getBoundingClientRect();
         const isMobile = window.innerWidth <= 480;
-        const noteWidth = isMobile ? 140 : 250;
-        const noteHeight = isMobile ? 100 : 200;
+        const noteWidth = isMobile ? 200 : 350;
+        const noteHeight = isMobile ? 250 : 300;
         
         // Clamp to valid bounds before saving
         const clampedX = Math.max(0, Math.min(note.position.x, containerRect.width - noteWidth));
@@ -448,12 +452,15 @@ export default function StickerClubWall() {
     };
   }, [draggingNote]);
 
+  // Get bulletin board image path
+  const bulletinImagePath = getImagePath('/images/sticky mail/bulletin.jpg');
+  
   return (
     <div className={styles.container}>
       <div 
         className={styles.bulletinBoard}
         style={{
-          backgroundImage: `url("${getImagePath('/images/sticky mail/bulletin.jpg')}")`
+          backgroundImage: `url("${bulletinImagePath}")`
         }}
       >
         {/* Header */}

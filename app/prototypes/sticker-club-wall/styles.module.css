@@ -1,44 +1,30 @@
-/* Custom Handwritten Font */
-@font-face {
-  font-family: 'CustomHandwritten';
-  src: url('/fonts/MessyHandwritten-Regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
+/* Retro monospace font - code style */
 .container {
   min-height: 100vh;
   min-height: 100dvh;
   position: relative;
-  overflow: hidden;
-  font-family: 'CustomHandwritten', cursive, sans-serif;
+  overflow-x: hidden;
+  overflow-y: auto;
+  font-family: 'Courier New', 'Monaco', 'Consolas', 'Lucida Console', monospace;
 }
 
 .bulletinBoard {
   min-height: 100vh;
   background: 
-    /* Vintage cork board texture */
-    linear-gradient(135deg, #8b6f47 0%, #6b5438 50%, #8b6f47 100%),
-    /* Cork texture pattern */
-    repeating-linear-gradient(
-      90deg,
-      transparent,
-      transparent 10px,
-      rgba(0, 0, 0, 0.03) 10px,
-      rgba(0, 0, 0, 0.03) 11px
-    ),
+    /* Retro terminal green background */
+    linear-gradient(135deg, #0d2818 0%, #1a4d2e 50%, #0d2818 100%),
+    /* Scan lines effect */
     repeating-linear-gradient(
       0deg,
-      transparent,
-      transparent 10px,
-      rgba(0, 0, 0, 0.03) 10px,
-      rgba(0, 0, 0, 0.03) 11px
+      rgba(0, 0, 0, 0.1),
+      rgba(0, 0, 0, 0.1) 1px,
+      transparent 1px,
+      transparent 2px
     );
-  background-size: 100%, 20px 20px, 20px 20px;
-  padding: 2rem;
+  background-size: 100%, 100% 4px;
+  padding: 1rem;
   position: relative;
-  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.3);
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.5);
 }
 
 .bulletinBoard::before {
@@ -62,44 +48,49 @@
 }
 
 .title {
-  font-size: 3.5rem;
-  color: #fff;
+  font-size: 2.5rem;
+  color: #00ff41;
   text-shadow: 
-    3px 3px 0px rgba(0, 0, 0, 0.5),
-    -1px -1px 0px rgba(255, 255, 255, 0.3);
+    0 0 10px rgba(0, 255, 65, 0.5),
+    0 0 20px rgba(0, 255, 65, 0.3);
   margin: 0 0 0.5rem 0;
-  letter-spacing: 2px;
+  letter-spacing: 3px;
+  font-weight: bold;
+  text-transform: uppercase;
 }
 
 .subtitle {
-  font-size: 1.3rem;
-  color: #f5f5f5;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  font-size: 0.9rem;
+  color: #00ff41;
+  text-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
   margin: 0 0 1.5rem 0;
+  letter-spacing: 2px;
+  opacity: 0.8;
 }
 
 .createButton {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
-  color: white;
-  border: 3px solid #fff;
+  background: #000;
+  color: #00ff41;
+  border: 2px solid #00ff41;
   padding: 0.8rem 2rem;
-  font-size: 1.2rem;
-  font-family: 'CustomHandwritten', cursive, sans-serif;
-  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: 'Courier New', 'Monaco', 'Consolas', 'Lucida Console', monospace;
   cursor: pointer;
   box-shadow: 
-    0 4px 6px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  transition: all 0.3s ease;
-  text-transform: lowercase;
-  letter-spacing: 1px;
+    0 0 10px rgba(0, 255, 65, 0.5),
+    inset 0 0 10px rgba(0, 255, 65, 0.1);
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: bold;
 }
 
 .createButton:hover {
-  transform: translateY(-2px);
+  background: #00ff41;
+  color: #000;
   box-shadow: 
-    0 6px 12px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    0 0 20px rgba(0, 255, 65, 0.8),
+    inset 0 0 20px rgba(0, 0, 0, 0.3);
 }
 
 .createButton:active {
@@ -118,9 +109,10 @@
   min-height: 200px;
   padding: 1.5rem;
   padding-top: 2.5rem;
+  border: 2px solid #333;
   box-shadow: 
-    0 4px 8px rgba(0, 0, 0, 0.3),
-    0 2px 4px rgba(0, 0, 0, 0.2);
+    0 0 10px rgba(0, 255, 65, 0.2),
+    inset 0 0 10px rgba(0, 0, 0, 0.3);
   cursor: move;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -157,11 +149,12 @@
 
 .noteText {
   margin: 0;
-  font-size: 1rem;
-  line-height: 1.5;
-  color: #333;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: #000;
   word-wrap: break-word;
-  font-family: 'CustomHandwritten', cursive, sans-serif;
+  font-family: 'Courier New', 'Monaco', 'Consolas', 'Lucida Console', monospace;
+  white-space: pre-wrap;
 }
 
 .noteImage,
@@ -181,9 +174,12 @@
 }
 
 .emptyText {
-  font-size: 1.5rem;
-  color: rgba(255, 255, 255, 0.8);
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  font-size: 0.9rem;
+  color: #00ff41;
+  text-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+  font-family: 'Courier New', 'Monaco', 'Consolas', 'Lucida Console', monospace;
+  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
 /* Modal Styles */
@@ -193,7 +189,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -202,16 +198,15 @@
 }
 
 .modal {
-  background: linear-gradient(135deg, #fefefe 0%, #f9f8f5 100%);
-  border-radius: 12px;
+  background: #000;
+  border: 2px solid #00ff41;
   width: 100%;
   max-width: 600px;
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 
-    0 20px 60px rgba(0, 0, 0, 0.5),
-    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
-  border: 3px solid #8b6f47;
+    0 0 30px rgba(0, 255, 65, 0.5),
+    inset 0 0 30px rgba(0, 255, 65, 0.1);
   position: relative;
 }
 
@@ -220,34 +215,41 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem;
-  border-bottom: 2px solid #ddd;
-  background: linear-gradient(135deg, #8b6f47 0%, #6b5438 100%);
-  color: white;
+  border-bottom: 2px solid #00ff41;
+  background: #000;
 }
 
 .modalHeader h2 {
   margin: 0;
-  font-size: 1.8rem;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  font-size: 1.2rem;
+  color: #00ff41;
+  text-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+  font-family: 'Courier New', 'Monaco', 'Consolas', 'Lucida Console', monospace;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: bold;
 }
 
 .closeButton {
   background: transparent;
-  border: none;
-  color: white;
-  font-size: 2rem;
+  border: 2px solid #00ff41;
+  color: #00ff41;
+  font-size: 1.5rem;
   cursor: pointer;
   width: 40px;
   height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
+  font-family: 'Courier New', 'Monaco', 'Consolas', 'Lucida Console', monospace;
+  font-weight: bold;
 }
 
 .closeButton:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: #00ff41;
+  color: #000;
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.8);
 }
 
 .modalContent {
@@ -264,25 +266,28 @@
 .modeButton {
   flex: 1;
   min-width: 120px;
-  padding: 1rem;
-  background: #f5f5f5;
-  border: 2px solid #ddd;
-  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  background: #000;
+  border: 2px solid #00ff41;
+  color: #00ff41;
   cursor: pointer;
-  font-family: 'CustomHandwritten', cursive, sans-serif;
-  font-size: 1.1rem;
-  transition: all 0.3s ease;
+  font-family: 'Courier New', 'Monaco', 'Consolas', 'Lucida Console', monospace;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: bold;
 }
 
 .modeButton:hover {
-  background: #e9e9e9;
-  border-color: #8b6f47;
+  background: rgba(0, 255, 65, 0.1);
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
 }
 
 .modeButton.active {
-  background: linear-gradient(135deg, #8b6f47 0%, #6b5438 100%);
-  color: white;
-  border-color: #8b6f47;
+  background: #00ff41;
+  color: #000;
+  box-shadow: 0 0 15px rgba(0, 255, 65, 0.8);
 }
 
 .colorPicker {
@@ -292,8 +297,11 @@
 .colorPicker label {
   display: block;
   margin-bottom: 0.5rem;
-  font-size: 1.1rem;
-  color: #333;
+  font-size: 0.9rem;
+  color: #00ff41;
+  font-family: 'Courier New', 'Monaco', 'Consolas', 'Lucida Console', monospace;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .colorOptions {
@@ -324,31 +332,34 @@
 .textInput {
   width: 100%;
   padding: 1rem;
-  border: 2px solid #ddd;
-  border-radius: 8px;
-  font-family: 'CustomHandwritten', cursive, sans-serif;
-  font-size: 1rem;
+  border: 2px solid #00ff41;
+  font-family: 'Courier New', 'Monaco', 'Consolas', 'Lucida Console', monospace;
+  font-size: 0.85rem;
   resize: vertical;
-  background: #fff;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: #000;
+  color: #00ff41;
+  box-shadow: inset 0 0 10px rgba(0, 255, 65, 0.1);
 }
 
 .uploadButton {
-  padding: 1rem 2rem;
-  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
-  color: white;
-  border: none;
-  border-radius: 8px;
+  padding: 0.8rem 2rem;
+  background: #000;
+  color: #00ff41;
+  border: 2px solid #00ff41;
   cursor: pointer;
-  font-family: 'CustomHandwritten', cursive, sans-serif;
-  font-size: 1.1rem;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  font-family: 'Courier New', 'Monaco', 'Consolas', 'Lucida Console', monospace;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: bold;
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
 }
 
 .uploadButton:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  background: #00ff41;
+  color: #000;
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.8);
 }
 
 .imagePreview {
@@ -366,45 +377,56 @@
 .removeButton {
   margin-top: 1rem;
   padding: 0.5rem 1rem;
-  background: #f44336;
-  color: white;
-  border: none;
-  border-radius: 6px;
+  background: #000;
+  color: #ff4444;
+  border: 2px solid #ff4444;
   cursor: pointer;
-  font-family: 'CustomHandwritten', cursive, sans-serif;
+  font-family: 'Courier New', 'Monaco', 'Consolas', 'Lucida Console', monospace;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: bold;
+  transition: all 0.2s ease;
 }
 
 .removeButton:hover {
-  background: #d32f2f;
+  background: #ff4444;
+  color: #000;
+  box-shadow: 0 0 10px rgba(255, 68, 68, 0.8);
 }
 
 .doodleCanvas {
   width: 100%;
   max-width: 400px;
   height: 300px;
-  border: 2px solid #ddd;
-  border-radius: 8px;
+  border: 2px solid #00ff41;
   cursor: crosshair;
-  background: white;
+  background: #000;
   display: block;
   margin: 0 auto;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
 }
 
 .clearButton {
   display: block;
   margin: 1rem auto 0;
   padding: 0.5rem 1rem;
-  background: #ff9800;
-  color: white;
-  border: none;
-  border-radius: 6px;
+  background: #000;
+  color: #ff9800;
+  border: 2px solid #ff9800;
   cursor: pointer;
-  font-family: 'CustomHandwritten', cursive, sans-serif;
+  font-family: 'Courier New', 'Monaco', 'Consolas', 'Lucida Console', monospace;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: bold;
+  transition: all 0.2s ease;
 }
 
 .clearButton:hover {
-  background: #f57c00;
+  background: #ff9800;
+  color: #000;
+  box-shadow: 0 0 10px rgba(255, 152, 0, 0.8);
 }
 
 .additionalText {
@@ -414,8 +436,11 @@
 .additionalText label {
   display: block;
   margin-bottom: 0.5rem;
-  font-size: 1rem;
-  color: #333;
+  font-size: 0.9rem;
+  color: #00ff41;
+  font-family: 'Courier New', 'Monaco', 'Consolas', 'Lucida Console', monospace;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .modalFooter {
@@ -423,127 +448,228 @@
   justify-content: flex-end;
   gap: 1rem;
   padding: 1.5rem;
-  border-top: 2px solid #ddd;
-  background: #f9f9f9;
+  border-top: 2px solid #00ff41;
+  background: #000;
 }
 
 .cancelButton,
 .postButton {
   padding: 0.8rem 2rem;
-  border-radius: 8px;
   cursor: pointer;
-  font-family: 'CustomHandwritten', cursive, sans-serif;
-  font-size: 1.1rem;
-  transition: all 0.3s ease;
-  border: 2px solid transparent;
+  font-family: 'Courier New', 'Monaco', 'Consolas', 'Lucida Console', monospace;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: bold;
 }
 
 .cancelButton {
-  background: #f5f5f5;
-  color: #333;
-  border-color: #ddd;
+  background: #000;
+  color: #ff4444;
+  border: 2px solid #ff4444;
 }
 
 .cancelButton:hover {
-  background: #e9e9e9;
+  background: #ff4444;
+  color: #000;
+  box-shadow: 0 0 10px rgba(255, 68, 68, 0.8);
 }
 
 .postButton {
-  background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
-  color: white;
-  border-color: #1976d2;
+  background: #000;
+  color: #00ff41;
+  border: 2px solid #00ff41;
 }
 
 .postButton:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  background: #00ff41;
+  color: #000;
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.8);
 }
 
 .postButton:disabled {
-  opacity: 0.5;
+  opacity: 0.3;
   cursor: not-allowed;
+  border-color: #666;
+  color: #666;
 }
 
-.backButton {
-  position: fixed;
-  top: 1rem;
-  left: 1rem;
-  padding: 0.8rem 1.5rem;
-  background: rgba(139, 111, 71, 0.9);
-  color: white;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
-  cursor: pointer;
-  font-family: 'CustomHandwritten', cursive, sans-serif;
-  font-size: 1.1rem;
-  z-index: 100;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s ease;
-}
-
-.backButton:hover {
-  background: rgba(107, 84, 56, 0.95);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-}
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .title {
-    font-size: 2.5rem;
+    font-size: 1.8rem;
   }
 
   .subtitle {
-    font-size: 1.1rem;
+    font-size: 0.75rem;
+  }
+
+  .header {
+    margin-bottom: 1.5rem;
+  }
+
+  .createButton {
+    font-size: 0.75rem;
+    padding: 0.6rem 1.5rem;
   }
 
   .stickyNote {
-    width: 200px;
-    min-height: 150px;
-    padding: 1rem;
-    padding-top: 2rem;
-  }
-
-  .modal {
-    max-width: 95%;
-    margin: 1rem;
-  }
-
-  .doodleCanvas {
-    max-width: 100%;
-    height: 250px;
-  }
-
-  .modeSelector {
-    flex-direction: column;
-  }
-
-  .modeButton {
-    width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .bulletinBoard {
-    padding: 1rem;
-  }
-
-  .title {
-    font-size: 2rem;
-  }
-
-  .subtitle {
-    font-size: 1rem;
-  }
-
-  .stickyNote {
-    width: 180px;
+    width: 150px;
     min-height: 120px;
     padding: 0.8rem;
     padding-top: 1.8rem;
   }
 
   .noteText {
-    font-size: 0.9rem;
+    font-size: 0.7rem;
+  }
+
+  .modal {
+    max-width: 95%;
+    margin: 0.5rem;
+  }
+
+  .modalContent {
+    padding: 1rem;
+  }
+
+  .doodleCanvas {
+    max-width: 100%;
+    height: 200px;
+  }
+
+  .modeSelector {
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .modeButton {
+    width: 100%;
+    font-size: 0.75rem;
+    padding: 0.6rem;
+  }
+}
+
+/* iPhone specific styles */
+@media (max-width: 480px) {
+  .bulletinBoard {
+    padding: 0.5rem;
+  }
+
+  .title {
+    font-size: 1.3rem;
+    letter-spacing: 2px;
+  }
+
+  .subtitle {
+    font-size: 0.65rem;
+    margin-bottom: 1rem;
+  }
+
+  .header {
+    margin-bottom: 1rem;
+  }
+
+  .createButton {
+    font-size: 0.7rem;
+    padding: 0.5rem 1rem;
+    letter-spacing: 1px;
+  }
+
+  .stickyNote {
+    width: 140px;
+    min-height: 100px;
+    padding: 0.6rem;
+    padding-top: 1.5rem;
+    font-size: 0.65rem;
+  }
+
+  .noteText {
+    font-size: 0.65rem;
+    line-height: 1.4;
+  }
+
+  .noteImage,
+  .noteDoodle {
+    max-height: 80px;
+  }
+
+  .pin {
+    width: 30px;
+    height: 30px;
+    top: -10px;
+  }
+
+  .notesContainer {
+    min-height: calc(100vh - 150px);
+  }
+
+  .modal {
+    max-width: 100%;
+    margin: 0;
+    max-height: 100vh;
+  }
+
+  .modalHeader {
+    padding: 1rem;
+  }
+
+  .modalHeader h2 {
+    font-size: 1rem;
+  }
+
+  .modalContent {
+    padding: 0.8rem;
+  }
+
+  .doodleCanvas {
+    height: 180px;
+  }
+
+  .textInput {
+    font-size: 0.75rem;
+    padding: 0.8rem;
+  }
+
+  .colorPicker label,
+  .additionalText label {
+    font-size: 0.75rem;
+  }
+
+  .modalFooter {
+    padding: 1rem;
+    flex-direction: column;
+  }
+
+  .cancelButton,
+  .postButton {
+    width: 100%;
+    font-size: 0.75rem;
+    padding: 0.7rem;
+  }
+}
+
+/* iPhone landscape and smaller devices */
+@media (max-width: 480px) and (max-height: 700px) {
+  .stickyNote {
+    width: 120px;
+    min-height: 90px;
+    padding: 0.5rem;
+    padding-top: 1.3rem;
+  }
+
+  .noteText {
+    font-size: 0.6rem;
+  }
+
+  .title {
+    font-size: 1.1rem;
+  }
+
+  .header {
+    margin-bottom: 0.8rem;
   }
 }

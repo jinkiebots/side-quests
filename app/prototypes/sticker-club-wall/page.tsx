@@ -125,7 +125,7 @@ export default function StickerClubWall() {
     const y = e.clientY - rect.top;
     
     ctx.lineTo(x, y);
-    ctx.strokeStyle = '#333';
+    ctx.strokeStyle = '#00ff41';
     ctx.lineWidth = 2;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
@@ -162,8 +162,10 @@ export default function StickerClubWall() {
         // Set canvas defaults
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
-        ctx.strokeStyle = '#333';
+        ctx.strokeStyle = '#00ff41';
         ctx.lineWidth = 2;
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
     }
   }, [activeMode]);
@@ -173,8 +175,18 @@ export default function StickerClubWall() {
       return; // Don't post empty notes
     }
 
-    const positionX = Math.random() * (window.innerWidth * 0.6) + window.innerWidth * 0.2;
-    const positionY = Math.random() * (window.innerHeight * 0.5) + 150;
+    // Calculate positions that fit on screen, especially for mobile
+    const isMobile = window.innerWidth <= 480;
+    const noteWidth = isMobile ? 140 : 250;
+    const noteHeight = isMobile ? 100 : 200;
+    const headerHeight = isMobile ? 120 : 200;
+    const maxX = window.innerWidth - noteWidth - 20;
+    const maxY = window.innerHeight - noteHeight - 20;
+    const minX = 10;
+    const minY = headerHeight;
+    
+    const positionX = Math.random() * (maxX - minX) + minX;
+    const positionY = Math.random() * (maxY - minY) + minY;
     const rotation = (Math.random() - 0.5) * 10; // Random rotation between -5 and 5 degrees
 
     // Insert into Supabase
@@ -458,10 +470,6 @@ export default function StickerClubWall() {
         </div>
       )}
 
-      {/* Back Button */}
-      <button className={styles.backButton} onClick={() => router.push('/')}>
-        ← Back to Home
-      </button>
     </div>
   );
 }

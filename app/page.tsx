@@ -112,8 +112,18 @@ export default function Home() {
         try {
           const parsed = JSON.parse(saved);
           if (parsed && Array.isArray(parsed) && parsed.length > 0) {
-            setImages(parsed);
-            imagesRef.current = parsed;
+            // Ensure navigateTo properties are preserved for images that should navigate
+            const updated = parsed.map((img: DraggableImage) => {
+              if (img.id === 'ghibli-recipe' && !img.navigateTo) {
+                return { ...img, navigateTo: '/prototypes/ghibli-recipe-box' };
+              }
+              if (img.id === 'mail' && !img.navigateTo) {
+                return { ...img, navigateTo: '/prototypes/sticker-club-wall' };
+              }
+              return img;
+            });
+            setImages(updated);
+            imagesRef.current = updated;
             hasLoadedSavedPositionsRef.current = true;
             isLoadingSavedPositions.current = false;
             return; // Exit early if we loaded saved positions

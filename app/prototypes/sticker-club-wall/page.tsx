@@ -31,9 +31,67 @@ interface StickyNote {
   rotation: number;
   color: string;
   createdAt: number;
+  stickyVariant?: number; // 0, 1, or 2 for sticky1, sticky2, sticky3
 }
 
 const STICKY_COLORS = ['#ffeb3b', '#ff9800', '#4caf50', '#2196f3', '#e91e63', '#9c27b0'];
+
+// Profanity filter - block inappropriate words and common variations
+const INAPPROPRIATE_WORDS = [
+  'fuck', 'fck', 'f*ck', 'fuk', 'f_ck',
+  'shit', 'sh1t', 'sh*t', 'sht',
+  'dick', 'd1ck', 'd*ck', 'dck',
+  'pussy', 'p*ssy', 'pssyt', 'psy',
+  'bitch', 'b1tch', 'b*tch', 'btch',
+  'ass', 'a$$', 'a55',
+  'boob', 'b00b', 'boobies', 'b00bies',
+  'cock', 'c0ck', 'c*ck',
+  'damn', 'dmn', 'd*mn',
+  'hell', 'h3ll', 'h*ll',
+  'penis', 'p3nis', 'pen1s',
+  'vagina', 'vag1na', 'v*gina',
+  'sex', 's3x', 's*x',
+  'porn', 'p0rn', 'pr0n',
+  'cum', 'c*m', 'cvm',
+  'whore', 'wh0re', 'wh*re',
+  'slut', 'sl*t', 'slvt',
+  'bastard', 'b*stard', 'bstrd',
+  'crap', 'cr*p', 'crp',
+  'piss', 'p1ss', 'p*ss'
+];
+
+const containsInappropriateContent = (text: string): boolean => {
+  const lowerText = text.toLowerCase();
+  // Remove common obfuscation characters for checking
+  const normalizedText = lowerText
+    .replace(/[*_\-@#$%]/g, '')
+    .replace(/0/g, 'o')
+    .replace(/1/g, 'i')
+    .replace(/3/g, 'e')
+    .replace(/4/g, 'a')
+    .replace(/5/g, 's')
+    .replace(/7/g, 't')
+    .replace(/8/g, 'b');
+
+  return INAPPROPRIATE_WORDS.some(word => {
+    const normalizedWord = word
+      .replace(/[*_\-@#$%]/g, '')
+      .replace(/0/g, 'o')
+      .replace(/1/g, 'i')
+      .replace(/3/g, 'e')
+      .replace(/4/g, 'a')
+      .replace(/5/g, 's')
+      .replace(/7/g, 't')
+      .replace(/8/g, 'b');
+
+    // Use word boundary regex to avoid matching single letters or partial words
+    // \b requires at least 2 characters to work properly, so skip very short normalized words
+    if (normalizedWord.length < 2) return false;
+
+    const wordBoundaryRegex = new RegExp(`\\b${normalizedWord}\\b`, 'i');
+    return wordBoundaryRegex.test(normalizedText);
+  });
+};
 
 export default function StickerClubWall() {
   const router = useRouter();
@@ -45,7 +103,7 @@ export default function StickerClubWall() {
   const [doodleCanvas, setDoodleCanvas] = useState<string | null>(null);
   const [activeMode, setActiveMode] = useState<'text' | 'image' | 'doodle'>('text');
   const [isDrawing, setIsDrawing] = useState(false);
-  
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const notesContainerRef = useRef<HTMLDivElement>(null);
@@ -53,6 +111,19 @@ export default function StickerClubWall() {
   const [draggingNote, setDraggingNote] = useState<string | null>(null);
   const dragStartPosRef = useRef<{ x: number; y: number; noteX: number; noteY: number; offsetX: number; offsetY: number } | null>(null);
   const stickyNotesRef = useRef<StickyNote[]>([]);
+
+  // Sound effect functions
+  const playSound = (soundName: 'cowbell' | 'sparkle' | 'squeak') => {
+    const soundPaths = {
+      cowbell: getImagePath('/images/sticky mail/Cowbell Sharp Hit Sound.wav'),
+      sparkle: getImagePath('/images/sticky mail/Sparkle Hybrid Transition.wav'),
+      squeak: getImagePath('/images/sticky mail/Squeak Notification Sound.wav'),
+    };
+
+    const audio = new Audio(soundPaths[soundName]);
+    audio.volume = 0.5;
+    audio.play().catch(err => console.log('Audio play failed:', err));
+  };
 
   // Keep stickyNotesRef in sync with stickyNotes state
   useEffect(() => {
@@ -66,6 +137,7 @@ export default function StickerClubWall() {
       await new Promise(resolve => setTimeout(resolve, 200));
       
       try {
+        // Fetch non-archived sticky notes (or notes without archived field for backward compatibility)
         const { data, error } = await supabase
           .from('sticky_notes')
           .select('*')
@@ -88,59 +160,28 @@ export default function StickerClubWall() {
           const noteHeight = isMobile ? 250 : 300;
           const headerHeight = isMobile ? 120 : 200;
           
-          // Transform Supabase data to StickyNote format and clamp positions
-          const notes: StickyNote[] = data.map((note: any, index: number) => {
-            let clampedX = note.position_x || 0;
-            let clampedY = note.position_y || 0;
-            
-            // If container is available, clamp positions
-            if (containerRect && containerRect.width > 0 && containerRect.height > 0) {
-              clampedX = Math.max(10, Math.min(clampedX, containerRect.width - noteWidth - 10));
-              clampedY = Math.max(headerHeight, Math.min(clampedY, containerRect.height - noteHeight - 10));
-            } else {
-              // Fallback: use default positions if container not ready
-              clampedX = 10 + (index % 3) * (noteWidth + 20);
-              clampedY = headerHeight + Math.floor(index / 3) * (noteHeight + 20);
-            }
-            
+          // Filter out archived notes and transform Supabase data to StickyNote format
+          const filteredData = data.filter((note: any) => !note.archived);
+
+          const notes: StickyNote[] = filteredData.map((note: any, index: number) => {
             return {
               id: note.id,
               text: note.text || '',
               image: note.image || undefined,
               doodle: note.doodle || undefined,
               position: {
-                x: clampedX,
-                y: clampedY,
+                x: note.position_x || 0,
+                y: note.position_y || 0,
               },
               rotation: note.rotation || 0,
               color: note.color || STICKY_COLORS[0],
               createdAt: new Date(note.created_at).getTime(),
+              stickyVariant: note.sticky_variant ?? (parseInt(note.id.slice(-1)) % 3),
             };
           });
-          
+
           setStickyNotes(notes);
           stickyNotesRef.current = notes;
-          
-          // Update positions in Supabase if they were clamped
-          notes.forEach((note, index) => {
-            const original = data[index];
-            if (original.position_x !== note.position.x || original.position_y !== note.position.y) {
-              // Fire and forget - update positions asynchronously
-              (async () => {
-                try {
-                  await supabase
-                    .from('sticky_notes')
-                    .update({
-                      position_x: note.position.x,
-                      position_y: note.position.y,
-                    })
-                    .eq('id', note.id);
-                } catch (err) {
-                  console.error('Error updating clamped position:', err);
-                }
-              })();
-            }
-          });
         }
       } catch (error) {
         console.error('Error loading sticky notes:', error);
@@ -238,8 +279,17 @@ export default function StickerClubWall() {
   }, [activeMode]);
 
   const handlePostSticky = async () => {
-    if (!currentText && !uploadedImage && !doodleCanvas) {
-      return; // Don't post empty notes
+    if (!currentText.trim()) {
+      playSound('cowbell');
+      alert('Please enter some text for your sticky note.');
+      return;
+    }
+
+    // Check for inappropriate content
+    if (containsInappropriateContent(currentText)) {
+      playSound('cowbell');
+      alert('Your message contains inappropriate content. Please keep it friendly!');
+      return;
     }
 
     // Calculate positions that fit within the bulletin board container
@@ -265,26 +315,52 @@ export default function StickerClubWall() {
     const positionX = Math.random() * (maxX - minX) + minX;
     const positionY = Math.random() * (maxY - minY) + minY;
     const rotation = (Math.random() - 0.5) * 10; // Random rotation between -5 and 5 degrees
+    const randomColor = STICKY_COLORS[Math.floor(Math.random() * STICKY_COLORS.length)]; // Random color
+    const randomStickyVariant = Math.floor(Math.random() * 3); // Random sticky variant 0, 1, or 2
 
     // Insert into Supabase
-    const { data, error } = await supabase
-      .from('sticky_notes')
-      .insert({
-        text: currentText || null,
-        image: uploadedImage || null,
-        doodle: doodleCanvas || null,
-        position_x: positionX,
-        position_y: positionY,
-        rotation: rotation,
-        color: selectedColor,
-      })
-      .select()
-      .single();
+    // Try with sticky_variant first, fall back without it if column doesn't exist
+    let data, error;
+    try {
+      const result = await supabase
+        .from('sticky_notes')
+        .insert({
+          text: currentText,
+          image: null,
+          doodle: null,
+          position_x: positionX,
+          position_y: positionY,
+          rotation: rotation,
+          color: randomColor,
+          sticky_variant: randomStickyVariant,
+        })
+        .select()
+        .single();
+      data = result.data;
+      error = result.error;
+    } catch (err) {
+      // If sticky_variant column doesn't exist, try without it
+      const result = await supabase
+        .from('sticky_notes')
+        .insert({
+          text: currentText,
+          image: null,
+          doodle: null,
+          position_x: positionX,
+          position_y: positionY,
+          rotation: rotation,
+          color: randomColor,
+        })
+        .select()
+        .single();
+      data = result.data;
+      error = result.error;
+    }
 
     if (error) {
       console.error('Error posting sticky note:', error);
       console.error('Error details:', JSON.stringify(error, null, 2));
-      
+
       // More specific error messages
       let errorMessage = 'Failed to post sticky note. ';
       if (error.code === 'PGRST116' || error.message?.includes('relation') || error.message?.includes('does not exist')) {
@@ -294,12 +370,16 @@ export default function StickerClubWall() {
       } else {
         errorMessage += 'Please try again.';
       }
-      
+
+      playSound('cowbell');
       alert(errorMessage);
       return;
     }
 
     if (data) {
+      // Play sparkle sound for successful post
+      playSound('sparkle');
+
       // Transform Supabase response to StickyNote format
       const newNote: StickyNote = {
         id: data.id,
@@ -311,29 +391,43 @@ export default function StickerClubWall() {
           y: data.position_y,
         },
         rotation: data.rotation || 0,
-        color: data.color || selectedColor,
+        color: data.color || randomColor,
         createdAt: new Date(data.created_at).getTime(),
+        stickyVariant: data.sticky_variant ?? randomStickyVariant,
       };
 
-      setStickyNotes([newNote, ...stickyNotes]);
+      const updatedNotes = [newNote, ...stickyNotes];
+      setStickyNotes(updatedNotes);
+
+      // Auto-archive: If we now have 20 or more notes, archive the oldest ones
+      if (updatedNotes.length >= 20) {
+        const notesToArchive = updatedNotes.slice(19); // Everything after the 19th note (keep 19, archive the rest)
+
+        // Archive the excess notes in the background
+        notesToArchive.forEach(async (note) => {
+          try {
+            await supabase
+              .from('sticky_notes')
+              .update({ archived: true })
+              .eq('id', note.id);
+          } catch (err) {
+            console.error('Error archiving note:', err);
+          }
+        });
+
+        // Remove archived notes from display
+        setStickyNotes(updatedNotes.slice(0, 19));
+      }
     }
-    
+
     // Reset form
     setCurrentText('');
-    setUploadedImage(null);
-    setDoodleCanvas(null);
-    clearCanvas();
     setShowCreateModal(false);
-    setActiveMode('text');
   };
 
   const handleCancel = () => {
     setCurrentText('');
-    setUploadedImage(null);
-    setDoodleCanvas(null);
-    clearCanvas();
     setShowCreateModal(false);
-    setActiveMode('text');
   };
 
   // Handle dragging sticky notes
@@ -346,57 +440,42 @@ export default function StickerClubWall() {
 
     e.preventDefault();
     e.stopPropagation();
-    
+
     const note = stickyNotesRef.current.find(n => n.id === noteId);
-    if (!note || !notesContainerRef.current) return;
+    if (!note) return;
 
-    const containerRect = notesContainerRef.current.getBoundingClientRect();
-    const noteElement = e.currentTarget as HTMLElement;
-    const noteRect = noteElement.getBoundingClientRect();
-    
-    // Calculate offset from mouse to note's top-left corner
-    const offsetX = e.clientX - noteRect.left;
-    const offsetY = e.clientY - noteRect.top;
-
+    // Store the mouse start position and note's current position
     dragStartPosRef.current = {
       x: e.clientX,
       y: e.clientY,
       noteX: note.position.x,
       noteY: note.position.y,
-      offsetX: offsetX,
-      offsetY: offsetY,
+      offsetX: 0,
+      offsetY: 0,
     };
 
     setDraggingNote(noteId);
   };
 
   useEffect(() => {
-    if (!draggingNote || !dragStartPosRef.current || !notesContainerRef.current) return;
+    if (!draggingNote || !dragStartPosRef.current) return;
 
     const handleMouseMove = (e: MouseEvent) => {
       e.preventDefault();
-      if (!dragStartPosRef.current || !notesContainerRef.current) return;
+      if (!dragStartPosRef.current) return;
 
-      const containerRect = notesContainerRef.current.getBoundingClientRect();
-      
-      // Calculate new position based on mouse position minus the offset
-      let newX = e.clientX - containerRect.left - dragStartPosRef.current.offsetX;
-      let newY = e.clientY - containerRect.top - dragStartPosRef.current.offsetY;
+      // Calculate how much the mouse has moved
+      const deltaX = e.clientX - dragStartPosRef.current.x;
+      const deltaY = e.clientY - dragStartPosRef.current.y;
 
-      // Get note dimensions
-      const isMobile = window.innerWidth <= 480;
-      const noteWidth = isMobile ? 200 : 350;
-      const noteHeight = isMobile ? 250 : 300;
+      // Add the delta to the note's original position
+      const newX = dragStartPosRef.current.noteX + deltaX;
+      const newY = dragStartPosRef.current.noteY + deltaY;
 
-      // Constrain to container bounds (keep within bulletin board)
-      // Allow slight negative values while dragging to make it feel more natural
-      const constrainedX = Math.max(-50, Math.min(newX, containerRect.width - noteWidth + 50));
-      const constrainedY = Math.max(-50, Math.min(newY, containerRect.height - noteHeight + 50));
-
-      setStickyNotes(prev => 
-        prev.map(note => 
+      setStickyNotes(prev =>
+        prev.map(note =>
           note.id === draggingNote
-            ? { ...note, position: { x: constrainedX, y: constrainedY } }
+            ? { ...note, position: { x: newX, y: newY } }
             : note
         )
       );
@@ -405,33 +484,18 @@ export default function StickerClubWall() {
     const handleMouseUp = async () => {
       if (!draggingNote) return;
 
-      // Save new position to Supabase, clamping to valid bounds
+      // Play squeak sound when dropping note
+      playSound('squeak');
+
+      // Save new position to Supabase
       const note = stickyNotesRef.current.find(n => n.id === draggingNote);
-      if (note && notesContainerRef.current) {
-        const containerRect = notesContainerRef.current.getBoundingClientRect();
-        const isMobile = window.innerWidth <= 480;
-        const noteWidth = isMobile ? 200 : 350;
-        const noteHeight = isMobile ? 250 : 300;
-        
-        // Clamp to valid bounds before saving
-        const clampedX = Math.max(0, Math.min(note.position.x, containerRect.width - noteWidth));
-        const clampedY = Math.max(0, Math.min(note.position.y, containerRect.height - noteHeight));
-        
-        // Update state with clamped position
-        setStickyNotes(prev => 
-          prev.map(n => 
-            n.id === draggingNote
-              ? { ...n, position: { x: clampedX, y: clampedY } }
-              : n
-          )
-        );
-        
+      if (note) {
         try {
           await supabase
             .from('sticky_notes')
             .update({
-              position_x: clampedX,
-              position_y: clampedY,
+              position_x: note.position.x,
+              position_y: note.position.y,
             })
             .eq('id', note.id);
         } catch (error) {
@@ -452,38 +516,38 @@ export default function StickerClubWall() {
     };
   }, [draggingNote]);
 
-  // Get bulletin board image path
-  const bulletinImagePath = getImagePath('/images/sticky mail/Bulletin (1).svg');
-  
   return (
     <div className={styles.container}>
-      <div 
-        className={styles.bulletinBoard}
-        style={{
-          backgroundImage: `url("${bulletinImagePath}")`
-        }}
-      >
+      <div className={styles.bulletinBoard}>
         {/* Header */}
         <header className={styles.header}>
-          <h1 className={styles.title}>Sticker Club Wall</h1>
-          <p className={styles.subtitle}>Leave your anonymous doodles, notes, and digital stickers</p>
-          <button 
-            className={styles.createButton}
-            onClick={() => setShowCreateModal(true)}
-          >
-Create Sticky Note
-          </button>
+          <h1 className={styles.title}>Sticky Wall Club</h1>
+          <p className={styles.subtitle}>Leave your anonymous notes</p>
+          <div className={styles.buttonGroup}>
+            <button
+              className={styles.createButton}
+              onClick={() => setShowCreateModal(true)}
+            >
+              Create Sticky Note
+            </button>
+            <button
+              className={styles.archiveButton}
+              onClick={() => router.push('/prototypes/sticker-club-wall/archive')}
+            >
+              View Archived Stickies
+            </button>
+          </div>
         </header>
 
         {/* Sticky Notes Display */}
         <div ref={notesContainerRef} className={styles.notesContainer}>
           {stickyNotes.map((note) => {
-            // Consistently assign sticky image based on note ID (for persistence)
-            // Use Sticky Note.svg or Sticky Icon.svg
-            const useIcon = parseInt(note.id.slice(-1)) % 2 === 0;
-            const stickyImage = getImagePath(useIcon 
-              ? '/images/sticky mail/Sticky Icon.svg'
-              : '/images/sticky mail/Sticky Note.svg'
+            // Use stored variant (should always be set)
+            const stickyVariant = note.stickyVariant ?? 0;
+            const stickyImage = getImagePath(
+              stickyVariant === 0 ? '/images/sticky mail/sticky1.svg' :
+              stickyVariant === 1 ? '/images/sticky mail/sticky2.svg' :
+              '/images/sticky mail/sticky3.svg'
             );
             
             return (
@@ -491,8 +555,8 @@ Create Sticky Note
               key={note.id}
               className={`${styles.stickyNote} ${draggingNote === note.id ? styles.dragging : ''}`}
               style={{
-                left: `${Math.max(0, note.position.x)}px`,
-                top: `${Math.max(0, note.position.y)}px`,
+                left: `${note.position.x}px`,
+                top: `${note.position.y}px`,
                 transform: `rotate(${note.rotation}deg)`,
               }}
               onMouseDown={(e) => handleNoteMouseDown(e, note.id)}
@@ -555,121 +619,20 @@ Create Sticky Note
             </div>
 
             <div className={styles.modalContent}>
-              {/* Mode Selection */}
-              <div className={styles.modeSelector}>
-                <button
-                  className={`${styles.modeButton} ${activeMode === 'text' ? styles.active : ''}`}
-                  onClick={() => setActiveMode('text')}
-                >
-                  📝 Text
-                </button>
-                <button
-                  className={`${styles.modeButton} ${activeMode === 'image' ? styles.active : ''}`}
-                  onClick={() => setActiveMode('image')}
-                >
-                  🖼️ Image
-                </button>
-                <button
-                  className={`${styles.modeButton} ${activeMode === 'doodle' ? styles.active : ''}`}
-                  onClick={() => setActiveMode('doodle')}
-                >
-                  ✏️ Doodle
-                </button>
-              </div>
-
-              {/* Color Picker */}
-              <div className={styles.colorPicker}>
-                <label>Choose sticky note color:</label>
-                <div className={styles.colorOptions}>
-                  {STICKY_COLORS.map((color) => (
-                    <button
-                      key={color}
-                      className={styles.colorButton}
-                      style={{
-                        backgroundColor: color,
-                        border: selectedColor === color ? '3px solid #333' : '1px solid #ccc',
-                      }}
-                      onClick={() => setSelectedColor(color)}
-                    />
-                  ))}
+              {/* Text Input Only */}
+              <div className={styles.textMode}>
+                <textarea
+                  className={styles.textInput}
+                  placeholder="Write your note here... (Keep it friendly!)"
+                  value={currentText}
+                  onChange={(e) => setCurrentText(e.target.value)}
+                  rows={8}
+                  maxLength={200}
+                />
+                <div className={styles.charCount}>
+                  {currentText.length}/200 characters
                 </div>
               </div>
-
-              {/* Text Mode */}
-              {activeMode === 'text' && (
-                <div className={styles.textMode}>
-                  <textarea
-                    className={styles.textInput}
-                    placeholder="Write your note here..."
-                    value={currentText}
-                    onChange={(e) => setCurrentText(e.target.value)}
-                    rows={6}
-                  />
-                </div>
-              )}
-
-              {/* Image Mode */}
-              {activeMode === 'image' && (
-                <div className={styles.imageMode}>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    style={{ display: 'none' }}
-                  />
-                  <button
-                    className={styles.uploadButton}
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    📤 Upload Image
-                  </button>
-                  {uploadedImage && (
-                    <div className={styles.imagePreview}>
-                      <img src={uploadedImage} alt="Preview" />
-                      <button
-                        className={styles.removeButton}
-                        onClick={() => setUploadedImage(null)}
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Doodle Mode */}
-              {activeMode === 'doodle' && (
-                <div className={styles.doodleMode}>
-                  <canvas
-                    ref={canvasRef}
-                    width={400}
-                    height={300}
-                    className={styles.doodleCanvas}
-                    onMouseDown={startDrawing}
-                    onMouseMove={draw}
-                    onMouseUp={stopDrawing}
-                    onMouseLeave={stopDrawing}
-                  />
-                  <button className={styles.clearButton} onClick={clearCanvas}>
-                    Clear Canvas
-                  </button>
-                </div>
-              )}
-
-              {/* Mixed: Allow adding text to image/doodle */}
-              {(activeMode === 'image' || activeMode === 'doodle') && (
-                <div className={styles.additionalText}>
-                  <label>Add text (optional):</label>
-                  <textarea
-                    className={styles.textInput}
-                    placeholder="Add some text..."
-                    value={currentText}
-                    onChange={(e) => setCurrentText(e.target.value)}
-                    rows={3}
-                  />
-                </div>
-              )}
             </div>
 
             <div className={styles.modalFooter}>
@@ -679,7 +642,7 @@ Create Sticky Note
               <button
                 className={styles.postButton}
                 onClick={handlePostSticky}
-                disabled={!currentText && !uploadedImage && !doodleCanvas}
+                disabled={!currentText.trim()}
               >
                 Post to Wall
               </button>

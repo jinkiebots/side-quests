@@ -14,13 +14,13 @@
   position: fixed;
   top: 50%;
   left: 50%;
-  width: 100vh;
-  height: 100vw;
-  background-image: url('/ghibli-recipes/images/home/background.jpg');
+  width: 100vw;
+  height: 100vh;
+  background-image: url('/images/home/background.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  transform: translate(-50%, -50%) rotate(90deg);
+  transform: translate(-50%, -50%);
   transform-origin: center;
   z-index: 0;
 }
@@ -37,8 +37,8 @@
 }
 
 .draggableImage.pin {
-  width: 80px; /* 1.5x smaller than previous 120px */
-  height: 80px;
+  width: 53px; /* 1.5x smaller than previous 80px */
+  height: 53px;
 }
 
 .draggableImage.frog {
@@ -101,8 +101,8 @@
     height: 240px;
   }
   .draggableImage.pin {
-    width: 64px; /* 1.5x smaller than previous 96px */
-    height: 64px;
+    width: 43px; /* 1.5x smaller than previous 64px */
+    height: 43px;
   }
   .draggableImage.frog {
     width: 160px;
@@ -120,8 +120,8 @@
     height: 200px;
   }
   .draggableImage.pin {
-    width: 53px; /* ~1.5x smaller than previous 80px */
-    height: 53px;
+    width: 35px; /* 1.5x smaller than previous 53px */
+    height: 35px;
   }
   .draggableImage.frog {
     width: 133px;

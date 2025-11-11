@@ -11,9 +11,6 @@
 .bulletinBoard {
   min-height: 100vh;
   background-color: #f5f5f5;
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
   padding: 1rem;
   position: relative;
 }
@@ -43,7 +40,15 @@
   opacity: 0.9;
 }
 
-.createButton {
+.buttonGroup {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.createButton,
+.archiveButton {
   background: #fff;
   color: #000;
   border: 2px solid #000;
@@ -57,13 +62,23 @@
   font-weight: normal;
 }
 
-.createButton:hover {
+.createButton:hover,
+.archiveButton:hover {
   background: #000;
   color: #fff;
 }
 
-.createButton:active {
+.createButton:active,
+.archiveButton:active {
   transform: translateY(0);
+}
+
+.charCount {
+  text-align: right;
+  font-size: 0.75rem;
+  color: #666;
+  margin-top: 0.5rem;
+  font-family: 'Courier New', 'Monaco', 'Consolas', 'Lucida Console', monospace;
 }
 
 .notesContainer {
@@ -76,10 +91,10 @@
 
 .stickyNote {
   position: absolute;
-  width: 350px;
-  min-height: 300px;
-  padding: 2rem;
-  padding-top: 3rem;
+  width: 233px;
+  min-height: 200px;
+  padding: 1.3rem;
+  padding-top: 2rem;
   background: transparent;
   border: none;
   cursor: move;
@@ -145,24 +160,29 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   box-sizing: border-box;
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
   z-index: 1;
 }
 
 .noteText {
   margin: 0;
-  font-size: 0.9rem;
-  line-height: 1.5;
+  padding: 1rem;
+  font-size: 0.75rem;
+  line-height: 1.4;
   color: #000;
   word-wrap: break-word;
   overflow-wrap: break-word;
   font-family: 'Courier New', 'Monaco', 'Consolas', 'Lucida Console', monospace;
   white-space: pre-wrap;
   overflow: hidden;
-  max-height: 100%;
-  flex: 1;
   box-sizing: border-box;
+  text-align: center;
+  max-width: 90%;
 }
 
 .noteImage,
@@ -178,16 +198,83 @@
 .emptyState {
   text-align: center;
   padding: 4rem 2rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  width: 100%;
+}
+
+.emptyText {
+  font-size: 0.85rem;
+  color: #666;
+  font-family: 'Courier New', 'Monaco', 'Consolas', 'Lucida Console', monospace;
+  text-transform: none;
+  letter-spacing: 1px;
+}
+
+/* Archive Grid */
+.archiveGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(233px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
   position: relative;
   z-index: 1;
 }
 
-.emptyText {
-  font-size: 0.9rem;
+.archiveNote {
+  position: relative;
+  width: 233px;
+  min-height: 200px;
+  padding: 1.3rem;
+  padding-top: 2rem;
+  background: transparent;
+  border: none;
+  transition: transform 0.1s ease;
+  box-sizing: border-box;
+  margin: 0 auto;
+}
+
+.archiveNote:hover {
+  transform: scale(1.02);
+}
+
+.archiveDate {
+  position: absolute;
+  bottom: 10px;
+  right: 30px;
+  font-size: 0.7rem;
   color: #666;
   font-family: 'Courier New', 'Monaco', 'Consolas', 'Lucida Console', monospace;
-  text-transform: uppercase;
-  letter-spacing: 2px;
+  z-index: 2;
+}
+
+@media (max-width: 768px) {
+  .archiveGrid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .archiveNote {
+    min-height: 200px;
+    padding: 1.5rem;
+    padding-top: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .archiveGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 0.5rem;
+  }
+
+  .archiveNote {
+    min-height: 250px;
+  }
 }
 
 /* Modal Styles */
@@ -506,9 +593,14 @@
     margin-bottom: 1.5rem;
   }
 
-  .createButton {
+  .createButton,
+  .archiveButton {
     font-size: 0.75rem;
     padding: 0.6rem 1.5rem;
+  }
+
+  .buttonGroup {
+    gap: 0.5rem;
   }
 
   .stickyNote {
@@ -569,10 +661,16 @@
     margin-bottom: 1rem;
   }
 
-  .createButton {
+  .createButton,
+  .archiveButton {
     font-size: 0.7rem;
     padding: 0.5rem 1rem;
     letter-spacing: 1px;
+  }
+
+  .buttonGroup {
+    flex-direction: column;
+    gap: 0.5rem;
   }
 
   .stickyNote {

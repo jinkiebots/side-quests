@@ -34,11 +34,11 @@ export default function Home() {
     const mailSize = 300;
     const bunnySize = 200;
     const ipodSize = 300;
-    const pinSize = 80;
+    const pinSize = 53; // 1.5x smaller than previous 80px
     const spacingX = 250;
     const spacingY = 125;
-    const pinOffsetX = mailSize * 0.7;
-    const pinOffsetY = Math.round(pinSize * 0.15);
+    const pinOffsetX = mailSize * 0.65;
+    const pinOffsetY = pinSize * 0.85;
     
     const mailPos = { x: centerX + spacingX * 0.7 - mailSize / 2, y: centerY - spacingY * 0.7 - mailSize / 2 };
     
@@ -185,7 +185,7 @@ export default function Home() {
         const mailSize = isMobile ? 200 : isTablet ? 240 : 300;
         const bunnySize = isMobile ? 133 : isTablet ? 160 : 200;
         const ipodSize = isMobile ? 200 : isTablet ? 240 : 300;
-        const pinSize = isMobile ? 53 : isTablet ? 64 : 80;
+        const pinSize = isMobile ? 35 : isTablet ? 43 : 53;
         
         // Calculate center with proper spacing for mobile
         const centerX = viewportWidth / 2;
@@ -195,8 +195,8 @@ export default function Home() {
         const spacingX = isMobile ? viewportWidth * 0.18 : 250;
         const spacingY = isMobile ? viewportHeight * 0.15 : 125;
         
-        const pinOffsetX = mailSize * 0.7;
-        const pinOffsetY = Math.round(pinSize * 0.15);
+        const pinOffsetX = mailSize * 0.65;
+        const pinOffsetY = pinSize * 0.85;
         
         const next = [
           {
@@ -317,9 +317,9 @@ export default function Home() {
             const isMobile = viewportWidth <= 480;
             const isTablet = viewportWidth > 480 && viewportWidth <= 768;
             const mailSize = isMobile ? 200 : isTablet ? 240 : 300;
-            const pinSize = isMobile ? 53 : isTablet ? 64 : 80;
-            const pinOffsetX = mailSize * 0.7; // positioned even more to the right
-            const pinOffsetY = Math.round(pinSize * 0.15); // even lower, overlapping more with mail
+            const pinSize = isMobile ? 35 : isTablet ? 43 : 53;
+            const pinOffsetX = mailSize * 0.65; // positioned even more to the right
+            const pinOffsetY = pinSize * 0.85; // even lower, overlapping more with mail
             const newMailX = startImgX + dx;
             const newMailY = startImgY + dy;
             return updated.map(img =>
@@ -400,9 +400,9 @@ export default function Home() {
             const isMobile = viewportWidth <= 480;
             const isTablet = viewportWidth > 480 && viewportWidth <= 768;
             const mailSize = isMobile ? 200 : isTablet ? 240 : 300;
-            const pinSize = isMobile ? 53 : isTablet ? 64 : 80;
-            const pinOffsetX = mailSize * 0.7; // positioned even more to the right
-            const pinOffsetY = Math.round(pinSize * 0.15); // even lower, overlapping more with mail
+            const pinSize = isMobile ? 35 : isTablet ? 43 : 53;
+            const pinOffsetX = mailSize * 0.65; // positioned even more to the right
+            const pinOffsetY = pinSize * 0.85; // even lower, overlapping more with mail
             const newMailX = startImgX + dx;
             const newMailY = startImgY + dy;
             return updated.map(img =>
@@ -442,10 +442,10 @@ export default function Home() {
         <div
           key={image.id}
           className={`${styles.draggableImage} ${image.id === 'pin' ? styles.pin : ''} ${image.id === 'frog' ? styles.frog : ''} ${image.id === 'bunny' ? styles.bunny : ''}`}
-          style={{ 
-            left: `${image.position.x}px`, 
+          style={{
+            left: `${image.position.x}px`,
             top: `${image.position.y}px`,
-            zIndex: draggingRef.current.id === image.id ? 20 : 10
+            zIndex: image.id === 'pin' ? 25 : (draggingRef.current.id === image.id ? 20 : 10)
           }}
           onMouseDown={(e) => handleMouseDown(image.id, e)}
           onTouchStart={(e) => handleTouchStart(image.id, e)}

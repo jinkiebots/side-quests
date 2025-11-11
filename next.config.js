@@ -1,13 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
   images: {
-    unoptimized: true, // Required for static export
+    unoptimized: true,
   },
-  // basePath and assetPrefix are needed for GitHub Pages deployment
-  basePath: '/ghibli-recipes',
-  assetPrefix: '/ghibli-recipes',
-}
+  devIndicators: {
+    buildActivity: false,
+    buildActivityPosition: 'bottom-left',
+  },
+};
 
 module.exports = nextConfig
 

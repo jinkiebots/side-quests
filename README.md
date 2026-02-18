@@ -24,7 +24,7 @@ If you prefer GitHub Pages, you'll need to configure static export:
 1. The `next.config.js` is already configured with:
    ```js
    output: 'export',
-   basePath: '/ghibli-recipes',
+   basePath: '/side-quests',
    ```
 
 2. Follow the GitHub Actions workflow that's already set up in `.github/workflows/deploy.yml`

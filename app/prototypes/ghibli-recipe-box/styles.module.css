@@ -1,7 +1,7 @@
 /* Custom Handwritten Font - Add your font files here */
 @font-face {
   font-family: 'CustomHandwritten';
-  src: url('/ghibli-recipes/fonts/MessyHandwritten-Regular.ttf') format('truetype');
+  src: url('/side-quests/fonts/MessyHandwritten-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;

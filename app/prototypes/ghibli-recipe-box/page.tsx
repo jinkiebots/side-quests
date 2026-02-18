@@ -6,8 +6,8 @@ import styles from './styles.module.css';
 // Helper for image paths
 const getImagePath = (path: string) => {
   // Check if we're in production with basePath
-  if (typeof window !== 'undefined' && window.location.pathname.startsWith('/ghibli-recipes')) {
-    return `/ghibli-recipes${path}`;
+  if (typeof window !== 'undefined' && window.location.pathname.startsWith('/side-quests')) {
+    return `/side-quests${path}`;
   }
   return path;
 };

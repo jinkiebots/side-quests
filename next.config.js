@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
-  basePath: '/ghibli-recipes',
+  basePath: '/side-quests',
   images: {
     unoptimized: true,
   },

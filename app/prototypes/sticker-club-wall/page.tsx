@@ -16,8 +16,8 @@ const getImagePath = (path: string) => {
   });
   const encodedPath = encodedParts.join('/');
   
-  if (typeof window !== 'undefined' && window.location.pathname.startsWith('/ghibli-recipes')) {
-    return `/ghibli-recipes${encodedPath}`;
+  if (typeof window !== 'undefined' && window.location.pathname.startsWith('/side-quests')) {
+    return `/side-quests${encodedPath}`;
   }
   return encodedPath;
 };

@@ -102,6 +102,25 @@ export default function Home() {
   const hasLoadedSavedPositionsRef = useRef(false);
   const isLoadingSavedPositions = useRef(false);
   
+  // Fix image src paths on mount to include basePath
+  const fixImagePaths = (imgs: DraggableImage[]): DraggableImage[] => {
+    return imgs.map(img => {
+      let src = img.src;
+      if (src) {
+        const bare = src.replace(/^\/(side-quests|ghibli-recipes)/, '');
+        src = getImagePath(bare);
+      }
+      const result: DraggableImage = { ...img, src };
+      if (img.id === 'ghibli-recipe' && !img.navigateTo) {
+        result.navigateTo = '/prototypes/ghibli-recipe-box';
+      }
+      if (img.id === 'mail' && !img.navigateTo) {
+        result.navigateTo = '/prototypes/sticker-club-wall';
+      }
+      return result;
+    });
+  };
+
   // Load saved positions from sessionStorage on mount (run FIRST)
   // sessionStorage persists only for the current tab and resets when tab is closed
   useEffect(() => {
@@ -112,28 +131,20 @@ export default function Home() {
         try {
           const parsed = JSON.parse(saved);
           if (parsed && Array.isArray(parsed) && parsed.length > 0) {
-            // Ensure navigateTo properties are preserved for images that should navigate
-            const updated = parsed.map((img: DraggableImage) => {
-              if (img.id === 'ghibli-recipe' && !img.navigateTo) {
-                return { ...img, navigateTo: '/prototypes/ghibli-recipe-box' };
-              }
-              if (img.id === 'mail' && !img.navigateTo) {
-                return { ...img, navigateTo: '/prototypes/sticker-club-wall' };
-              }
-              return img;
-            });
+            const updated = fixImagePaths(parsed);
             setImages(updated);
             imagesRef.current = updated;
             hasLoadedSavedPositionsRef.current = true;
             isLoadingSavedPositions.current = false;
-            return; // Exit early if we loaded saved positions
+            return;
           }
         } catch (e) {
-          // Invalid saved data, continue with default
           console.log('Invalid saved positions, using defaults');
         }
       }
-      hasLoadedSavedPositionsRef.current = false; // No saved positions
+      // No saved positions — fix initial image paths for basePath
+      setImages(prev => fixImagePaths(prev));
+      hasLoadedSavedPositionsRef.current = false;
       isLoadingSavedPositions.current = false;
     }
   }, []);
